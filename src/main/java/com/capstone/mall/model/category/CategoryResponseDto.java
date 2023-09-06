@@ -11,7 +11,7 @@ public class CategoryResponseDto {
 
     private String name;
 
-    private String Status;
+    private String status;
 
     List<CategoryResponseDto> child;
 }
