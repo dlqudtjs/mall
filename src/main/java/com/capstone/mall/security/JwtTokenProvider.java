@@ -1,5 +1,8 @@
 package com.capstone.mall.security;
 
+import com.capstone.mall.model.user.Role;
+import com.capstone.mall.repository.JpaTokenRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
+import java.util.Date;
+
+import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 
 @RequiredArgsConstructor
 @Component
@@ -19,10 +25,15 @@ public class JwtTokenProvider {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-    @Value("${jwt.token.validity}")
-    private long tokenValidityInMilliseconds;
+    @Value("${jwt.token.access.validity}")
+    private long accessTokenValidityInMilliseconds;
+
+    @Value("${jwt.token.refresh.validity}")
+    private long refreshTokenValidityInMilliseconds;
+
 
     private final MyUserDetails myUserDetails;
+    private final JpaTokenRepository jpaTokenRepository;
 
     @PostConstruct
     protected void init() {
@@ -39,6 +50,44 @@ public class JwtTokenProvider {
 
         return null;
     }
+
+    // accessToken 생성
+    public String createAccessToken(String userId, Role role) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("roles", role);
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
+
+        return Jwts.builder()
+                .setClaims(claims) // 데이터
+                .setIssuedAt(now) // 토큰 발행일자
+                .setExpiration(validity) // 토큰 만료일자
+                .signWith(HS256, secretKey) // 암호화 알고리즘, secret 값 세팅
+                .compact();
+    }
+
+    // refreshToken 생성
+    public String createRefreshToken(String userId, Role role) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("roles", role);
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+
+        String token = Jwts.builder()
+                .setClaims(claims) // 데이터
+                .setIssuedAt(now) // 토큰 발행일자
+                .setExpiration(validity) // 토큰 만료일자
+                .signWith(HS256, secretKey) // 암호화 알고리즘, secret 값 세팅
+                .compact();
+
+        // DB 에 refreshToken 저장 (존재하면 update, 없으면 insert)
+        jpaTokenRepository.upsertToken(userId, token);
+
+        return token;
+    }
+
 
     // 인증 객체 생성
     public Authentication getAuthentication(String token) {

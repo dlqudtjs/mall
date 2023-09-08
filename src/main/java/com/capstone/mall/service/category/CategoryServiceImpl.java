@@ -1,5 +1,6 @@
 package com.capstone.mall.service.category;
 
+import com.capstone.mall.configuration.NoLogging;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.category.Category;
 import com.capstone.mall.model.category.CategoryRequestDto;
@@ -25,8 +26,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public ResponseDto readCategoryList() {
-        log.info("readCategoryList");
-
         Category rootCategory = categoryRepository.findByCategoryId(0L).orElse(null);
 
         if (rootCategory == null) {
@@ -48,8 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
-        log.info("createCategory");
-
         Category createCategory = Category.builder()
                 .name(categoryRequestDto.getName())
                 .status(categoryRequestDto.getStatus())
@@ -63,7 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto) {
-        log.info("updateCategory");
         Category updateCategory = categoryRepository.findByCategoryId(categoryId).orElse(null);
 
         // 카테고리가 존재하지 않을 경우
@@ -80,7 +76,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseDto deleteCategory(Long categoryId) {
-        log.info("deleteCategory");
         categoryRepository.deleteById(categoryId);
 
         return responseService.createResponseDto(200, "", categoryId);
@@ -90,6 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param parent_category_id
      * 자신의 자식 카테고리를 불러오는 재귀 함수
      */
+    @NoLogging
     private List<CategoryResponseDto> getChildCategoryList(Long parent_category_id) {
         // 인수로 넘어온 parent_category_id를 부모 카테고리로 가지는 자식 카테고리를 조회함.
         List<Category> categoryList = categoryRepository.findByParentCategoryId(parent_category_id);

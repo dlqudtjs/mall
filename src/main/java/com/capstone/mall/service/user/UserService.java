@@ -4,5 +4,5 @@ import com.capstone.mall.model.ResponseDto;
 
 public interface UserService {
 
-    ResponseDto login(String userId);
+    ResponseDto login(String userId, String checkId);
 }

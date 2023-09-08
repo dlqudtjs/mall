@@ -17,7 +17,7 @@ public class User {
 
     @Id
     @Column(name = "meta_id", nullable = false)
-    private Long metaId;
+    private String metaId;
 
     @Column(name = "user_id", nullable = false)
     private String userId;

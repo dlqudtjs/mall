@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,13 +29,16 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests((authorizeRequests) ->
-                        authorizeRequests
-                                .requestMatchers("/api/users/**").permitAll()
-                                .requestMatchers("/api/sellers/**").hasAnyRole("SELLER", "ADMIN")
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                                // 나머지 요청은 인증만 하면 허용
-                                .requestMatchers("/api/**").authenticated()
+                                authorizeRequests
+                                        .anyRequest().permitAll()
+//                                        .anyRequest().authenticated()
+//                                .requestMatchers("/api/public/**").permitAll()
+//                                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+//                                        .requestMatchers("/api/sellers/**").hasRole("SELLER")
+//                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//
+//                                // 나머지 요청은 인증만 하면 허용
+//                                .requestMatchers("/api/**").permitAll()
                 )
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
@@ -43,15 +47,13 @@ public class WebSecurityConfig {
                                 // 인가 처리 과정에서 예외 핸들링 (403 Forbidden)
                                 .accessDeniedHandler(new CustomAccessDeniedHandler())
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), JwtAuthenticationFilter.class);
-        ;
-
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
