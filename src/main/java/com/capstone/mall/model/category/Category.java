@@ -4,14 +4,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Builder
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "category")
 public class Category {
 

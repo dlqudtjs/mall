@@ -9,5 +9,5 @@ public interface JpaUserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUserId(String userId);
 
-//    Optional<User> findByMetaId(String metaId);
+    Optional<User> findByMetaId(String metaId);
 }

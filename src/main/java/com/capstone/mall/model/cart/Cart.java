@@ -1,4 +1,4 @@
-package com.capstone.mall.model.token;
+package com.capstone.mall.model.cart;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,17 +11,19 @@ import lombok.RequiredArgsConstructor;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "token")
-public class Token {
+@Table(name = "cart")
+public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "token_id", nullable = false)
-    private Long tokenId;
+    @Column(name = "cart_id")
+    private Long cartId;
 
-    @Column(name = "refresh_token", nullable = false)
-    private String refreshToken;
-
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "item_id")
+    private Long itemId;
+
+    private int quantity;
 }

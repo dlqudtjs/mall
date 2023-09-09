@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 이미 존재하는 MetaId 인지 확인 후 없으면 생성
-        if (userRepository.findById(metaId).isEmpty()) {
+        if (userRepository.findByMetaId(metaId).isEmpty()) {
             User user = User.builder()
                     .metaId(metaId)
                     .userId(getNanoId())
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // MetaId 에 해당하는 User 조회 (userId, role 을 token 에 담기 위해)
-        User user = userRepository.findById(metaId).get();
+        User user = userRepository.findByMetaId(metaId).get();
 
         TokenResponse tokenResponse = TokenResponse.builder()
                 .accessToken(tokenProvider.createAccessToken(metaId, user.getRole()))

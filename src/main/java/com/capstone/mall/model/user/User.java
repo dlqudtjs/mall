@@ -4,23 +4,26 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Builder
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "User")
 public class User {
 
     @Id
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
     @Column(name = "meta_id", nullable = false)
     private String metaId;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
 
     @Column(nullable = false)
     private Role role;
