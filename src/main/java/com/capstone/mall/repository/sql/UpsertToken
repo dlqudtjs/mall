@@ -1,0 +1,18 @@
+CREATE DEFINER=`root`@`%` PROCEDURE `UpsertToken`(IN p_refresh_token VARCHAR(255), IN p_user_id VARCHAR(255))
+BEGIN
+    DECLARE v_existing_user_id VARCHAR(255);
+
+    -- user_id가 이미 존재하는지 확인
+    SELECT user_id INTO v_existing_user_id FROM token WHERE user_id = p_user_id;
+
+    IF v_existing_user_id IS NOT NULL THEN
+        -- user_id가 이미 존재하면 해당 행의 refresh_token을 변경
+        UPDATE token SET refresh_token = p_refresh_token WHERE user_id = p_user_id;
+    ELSE
+        -- user_id가 존재하지 않으면 새로운 행을 추가
+        INSERT INTO token (refresh_token, user_id) VALUES (p_refresh_token, p_user_id);
+    END IF;
+
+    -- 프로시저를 종료합니다.
+    COMMIT;
+END
