@@ -1,6 +1,5 @@
 package com.capstone.mall.model.item;
 
-import com.capstone.mall.model.keyword.Keyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +23,5 @@ public class ItemRequestDto {
     private String image2;
     private String image3;
 
-    private List<Keyword> keywords;
+    private List<String> keywords;
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 public class ItemResponseDto {
 
-    List<Item> items;
+    List<ItemListProjection> items;
 
     int totalPage;
 }

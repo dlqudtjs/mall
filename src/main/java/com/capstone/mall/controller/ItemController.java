@@ -1,14 +1,12 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
+import com.capstone.mall.model.item.ItemRequestDto;
 import com.capstone.mall.service.item.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,6 +32,13 @@ public class ItemController {
                                                               @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
         ResponseDto responseDto = itemService.readItemList(categoryId, pageNum, pageSize, sortType);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
+
+    @PostMapping("/sellers/items")
+    public ResponseEntity<ResponseDto> createItem(@RequestBody ItemRequestDto itemRequestDto) {
+        ResponseDto responseDto = itemService.createItem(itemRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
