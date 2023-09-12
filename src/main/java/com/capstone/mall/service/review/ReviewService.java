@@ -7,7 +7,7 @@ public interface ReviewService {
 
     ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sortType);
 
-    ResponseDto createReview(Long itemId, ReviewRequestDto reviewRequestDto);
+    ResponseDto createReview(ReviewRequestDto reviewRequestDto);
 
     ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto);
 

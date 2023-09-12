@@ -65,6 +65,10 @@ public class ItemServiceImpl implements ItemService {
     public ResponseDto readItemList(String search, int pageNum, int pageSize, String sortType) {
         List<ItemListProjectionInterface> items = itemRepository.callGetItemsBySearch(search, sortType);
 
+        if (items == null) {
+            return responseService.createResponseDto(200, "", null);
+        }
+
         List<ItemListProjection> itemList = new ArrayList<>();
         itemList = getItems(items, itemList);
 
@@ -86,7 +90,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 카테고리로 아이템 리스트 조회
     public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sortType) {
-        List<ItemListProjectionInterface> items = itemRepository.callGetItemsByCategoryId(categoryId, sortType);
+        List<ItemListProjectionInterface> items = itemRepository.callGetItemsByCategoryId(categoryId, sortType).orElse(null);
+
+        if (items == null) {
+            return responseService.createResponseDto(200, "", null);
+        }
 
         List<ItemListProjection> itemList = new ArrayList<>();
         itemList = getItems(items, itemList);
@@ -124,6 +132,22 @@ public class ItemServiceImpl implements ItemService {
         createKeyword(savedItem.getItemId(), itemRequestDto.getKeywords());
 
         return responseService.createResponseDto(201, "", savedItem.getItemId());
+    }
+
+    @Override
+    public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
+
+
+        return null;
+    }
+
+    @Override
+    public ResponseDto deleteItem(Long itemId) {
+        if (itemRepository.existsById(itemId)) {
+            return responseService.createResponseDto(200, "item does not exist", null);
+        }
+
+        return responseService.createResponseDto(200, "", itemId);
     }
 
     private List<ItemListProjection> getItems(List<ItemListProjectionInterface> items, List<ItemListProjection> itemList) {

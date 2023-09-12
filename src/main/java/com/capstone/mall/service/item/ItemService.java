@@ -14,4 +14,8 @@ public interface ItemService {
     ResponseDto createItem(ItemRequestDto itemRequestDto);
 
     ResponseDto readItem(Long itemId);
+
+    ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto);
+
+    ResponseDto deleteItem(Long itemId);
 }

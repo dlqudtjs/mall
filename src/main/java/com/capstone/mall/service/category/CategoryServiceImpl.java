@@ -76,6 +76,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseDto deleteCategory(Long categoryId) {
+        if (categoryRepository.existsById(categoryId)) {
+            return responseService.createResponseDto(200, "Category does not exist", null);
+        }
+
         categoryRepository.deleteById(categoryId);
 
         return responseService.createResponseDto(200, "", categoryId);

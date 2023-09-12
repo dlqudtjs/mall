@@ -13,7 +13,7 @@ public interface JpaItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByCategoryId(Long categoryId);
 
     @Query(value = "CALL GetItemsByCategoryId(:categoryId, :sortType)", nativeQuery = true)
-    List<ItemListProjectionInterface> callGetItemsByCategoryId(Long categoryId, String sortType);
+    Optional<List<ItemListProjectionInterface>> callGetItemsByCategoryId(Long categoryId, String sortType);
 
 
     @Query(value = "CALL SearchItemsByKeyword(:search, :sortType)", nativeQuery = true)

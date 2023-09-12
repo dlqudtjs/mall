@@ -1,16 +1,59 @@
-CREATE PROCEDURE `SearchItemsByKeyword`(
-    IN searchKeyword VARCHAR(255)
+CREATE DEFINER=`root`@`%` PROCEDURE `SearchItemsByKeyword`(
+    IN searchKeyword VARCHAR(255),
+    IN sortType VARCHAR(2)
 )
 BEGIN
+    DECLARE sort VARCHAR(100);
+    IF sortType = 'n' THEN
+        SET sort = 'i.created_at DESC';
+    ELSEIF sortType = 'r' THEN
+        SET sort = 'itemAvgReview DESC';
+    ELSEIF sortType = 'lp' THEN
+        SET sort = 'i.price ASC';
+    ELSEIF sortType = 'hp' THEN
+        SET sort = 'i.price DESC';
+    ELSEIF sortType = 's' THEN
+        SET sort = 'sales DESC';
+    END IF;
+
     -- 검색어를 기반으로 해당 키워드를 검색
-    SELECT keyword_id FROM keyword WHERE keyword LIKE CONCAT('%', searchKeyword, '%') INTO @searchKeywordIds;
+    SELECT GROUP_CONCAT(keyword_id) INTO @searchKeywordIds FROM keyword WHERE keyword LIKE CONCAT('%', searchKeyword, '%');
 
-    -- 키워드에 연결된 상품 조회
-    SELECT DISTINCT i.item_id, i.name
-    FROM item AS i
-    INNER JOIN itemKeyword AS ik ON i.item_id = ik.item_id
-    WHERE ik.keyword_id IN (
-        SELECT DISTINCT keyword_id FROM keyword WHERE keyword LIKE CONCAT('%', searchKeyword, '%')
-    );
+    SET @sql = CONCAT('
+        SELECT
+            i.item_id AS itemId,
+            i.category_id AS categoryId,
+            i.name,
+            i.image_1 AS image1,
+            i.image_2 AS image2,
+            i.image_3 AS image3,
+            i.content,
+            i.price,
+            i.stock,
+            i.created_at AS createdAt,
+            i.updated_at AS updatedAt,
+            COUNT(r.item_id) AS itemReviewCount,
+            AVG(r.rate) AS itemAvgReview,
+            SUM(od.result) AS sales
+        FROM item i
+        LEFT JOIN review r ON i.item_id = r.item_id
+        LEFT JOIN orderDetail od ON i.item_id = od.item_id
+        LEFT JOIN itemKeyword ik ON i.item_id = ik.item_id
+    ');
 
+    IF @searchKeywordIds IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, 'WHERE ik.keyword_id IN (', @searchKeywordIds, ')');
+    ELSE
+        -- 검색 키워드가 없으면 빈 결과를 반환
+        SET @sql = CONCAT(@sql, 'WHERE 1 = 0');
+    END IF;
+
+    SET @sql = CONCAT(@sql, '
+        GROUP BY i.item_id
+        ORDER BY ', sort, '
+    ');
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END

@@ -42,7 +42,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public ResponseDto deleteCart(Long cartId) {
         if (!cartRepository.existsById(cartId)) {
-            return responseService.createResponseDto(200, "Not Found Cart", null);
+            return responseService.createResponseDto(200, "cart does not exist", null);
         }
 
         cartRepository.deleteById(cartId);
