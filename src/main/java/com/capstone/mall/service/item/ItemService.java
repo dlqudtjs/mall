@@ -12,4 +12,6 @@ public interface ItemService {
     ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sortType);
 
     ResponseDto createItem(ItemRequestDto itemRequestDto);
+
+    ResponseDto readItem(Long itemId);
 }

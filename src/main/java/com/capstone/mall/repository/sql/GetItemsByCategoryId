@@ -1,0 +1,52 @@
+CREATE DEFINER=`root`@`%` PROCEDURE `GetItemsByCategoryId`(
+    IN categoryId INT,
+    IN sortType VARCHAR(2)
+)
+BEGIN
+    DECLARE sort VARCHAR(100);
+    IF sortType = 'n' THEN
+        SET sort = 'i.created_at DESC';
+    ELSEIF sortType = 'r' THEN
+        SET sort = 'itemAvgReview DESC';
+    ELSEIF sortType = 'lp' THEN
+        SET sort = 'i.price ASC';
+    ELSEIF sortType = 'hp' THEN
+        SET sort = 'i.price DESC';
+    ELSEIF sortType = 's' THEN
+        SET sort = 'sales DESC';
+    END IF;
+
+    SET @sql = CONCAT('
+        SELECT
+            i.item_id AS itemId,
+            i.category_id AS categoryId,
+            i.name,
+            i.image_1 AS image1,
+            i.image_2 AS image2,
+            i.image_3 AS image3,
+            i.content,
+            i.price,
+            i.stock,
+            i.created_at AS createdAt,
+            i.updated_at AS updatedAt,
+            COALESCE(itemReviewCount, 0) AS itemReviewCount,
+            COALESCE(itemAvgReview, 0) AS itemAvgReview,
+            COALESCE(sales, 0) AS sales
+        FROM item AS i
+        LEFT JOIN (
+            SELECT item_id, COUNT(*) AS itemReviewCount, AVG(rate) AS itemAvgReview
+            FROM review
+            GROUP BY item_id
+        ) AS r ON i.item_id = r.item_id
+        LEFT JOIN (
+            SELECT item_id, SUM(CASE WHEN result = 3 THEN 1 ELSE 0 END) AS sales
+            FROM orderDetail
+            GROUP BY item_id
+        ) AS od ON i.item_id = od.item_id
+        WHERE i.category_id = ', categoryId, '
+        ORDER BY ', sort, '
+    ');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END

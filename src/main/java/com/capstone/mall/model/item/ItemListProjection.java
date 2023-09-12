@@ -21,5 +21,5 @@ public class ItemListProjection {
 
     int reviewCount;
 
-    int rate;
+    double rate;
 }

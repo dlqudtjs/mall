@@ -15,6 +15,13 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    @GetMapping("/public/items/{itemId}")
+    public ResponseEntity<ResponseDto> readItem(@PathVariable Long itemId) {
+        ResponseDto responseDto = itemService.readItem(itemId);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
+
     @GetMapping("/public/items")
     public ResponseEntity<ResponseDto> readItemListBySearch(@RequestParam(required = true) String search,
                                                             @RequestParam(required = false, defaultValue = "n") String sortType,
@@ -42,4 +49,5 @@ public class ItemController {
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
+
 }
