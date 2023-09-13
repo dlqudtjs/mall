@@ -50,15 +50,55 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
 
+        // DB 반영
+        userRepository.flush();
+
         // MetaId 에 해당하는 User 조회 (userId, role 을 token 에 담기 위해)
         User user = userRepository.findByMetaId(metaId).get();
 
         TokenResponse tokenResponse = TokenResponse.builder()
-                .accessToken(tokenProvider.createAccessToken(metaId, user.getRole()))
-                .refreshToken(tokenProvider.createRefreshToken(metaId, user.getRole()))
+                .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
+                .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
                 .build();
 
         return responseService.createResponseDto(200, "", tokenResponse);
+    }
+
+    @Override
+    public ResponseDto refresh(String refreshToken) {
+        String token = tokenProvider.getToken(refreshToken);
+
+        if (!tokenProvider.validateToken(token)) {
+            return responseService.createResponseDto(401, "Invalid Token", null);
+        }
+
+        String userId = tokenProvider.getUserId(token);
+
+        User user = userRepository.findByUserId(userId).orElse(null);
+
+        if (user == null) {
+            return responseService.createResponseDto(401, "ID does not exist during token reissuance process", null);
+        }
+
+        TokenResponse tokenResponse = TokenResponse.builder()
+                .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
+                .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
+                .build();
+
+        return responseService.createResponseDto(200, "", tokenResponse);
+    }
+
+    @Override
+    public ResponseDto update(String userId, UserRequestDto userRequestDto) {
+        User user = userRepository.findByUserId(userId).orElse(null);
+
+        if (user == null) {
+            return responseService.createResponseDto(400, "ID does not exist", null);
+        }
+
+        user.setRole(userRequestDto.getRole());
+
+        return responseService.createResponseDto(200, "", user.getUserId());
     }
 
     public String decrypt(String clientKey) throws Exception {

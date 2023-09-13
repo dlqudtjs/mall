@@ -114,4 +114,8 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public String getToken(String token) {
+        return token.substring(7);
+    }
 }
