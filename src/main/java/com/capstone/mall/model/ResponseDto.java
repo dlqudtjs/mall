@@ -1,9 +1,10 @@
 package com.capstone.mall.model;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
-@Getters
+@Getter
 public class ResponseDto {
 
     private int code;

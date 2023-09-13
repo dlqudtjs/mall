@@ -1,6 +1,7 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
+import com.capstone.mall.model.user.UserRequestDto;
 import com.capstone.mall.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login/{metaId}")
-    public ResponseEntity<ResponseDto> login(@PathVariable String metaId, @RequestBody String checkId) {
-        ResponseDto responseDto = userService.login(metaId, checkId);
+    public ResponseEntity<ResponseDto> login(@PathVariable String metaId, @RequestBody UserRequestDto userRequestDto) throws Exception {
+        ResponseDto responseDto = userService.login(metaId, userRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
-
 }

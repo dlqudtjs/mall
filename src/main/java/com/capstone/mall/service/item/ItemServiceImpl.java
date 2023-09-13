@@ -28,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ResponseDto readItem(Long itemId) {
-        Item item = itemRepository.findById(itemId).orElse(null);
+        ItemProjectionInterface item = itemRepository.callGetItemInfoByItemId(itemId).orElse(null);
 
         if (item == null) {
             return responseService.createResponseDto(200, "존재하지 않는 상품입니다.", null);
@@ -44,8 +44,8 @@ public class ItemServiceImpl implements ItemService {
                 .image3(item.getImage3())
                 .content(item.getContent())
                 .price(item.getPrice())
-                .rate(itemRepository.callCalculateAverageRating(itemId).orElse(0.0))
-                .reviewCount(itemRepository.callGetItemReviewCount(itemId))
+                .rate(item.getItemAvgReview())
+                .reviewCount(item.getItemReviewCount())
                 .stock(item.getStock())
                 .build();
 
@@ -136,9 +136,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
+        Item item = itemRepository.findById(itemId).orElse(null);
 
+        if (item == null) {
+            return responseService.createResponseDto(200, "item does not exist", null);
+        }
 
-        return null;
+        item.setSellerId(itemRequestDto.getSellerId());
+        item.setName(itemRequestDto.getName());
+        item.setCategoryId(itemRequestDto.getCategoryId());
+        item.setPrice(itemRequestDto.getPrice());
+        item.setStock(itemRequestDto.getStock());
+        item.setContent(itemRequestDto.getContent());
+        item.setImage1(itemRequestDto.getImage1());
+        item.setImage2(itemRequestDto.getImage2());
+        item.setImage3(itemRequestDto.getImage3());
+
+        return responseService.createResponseDto(200, "", item.getItemId());
     }
 
     @Override

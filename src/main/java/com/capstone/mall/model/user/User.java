@@ -23,8 +23,7 @@ public class User {
 
     @Column(name = "meta_id", nullable = false)
     private String metaId;
-
-
+    
     @Column(nullable = false)
     private Role role;
 }

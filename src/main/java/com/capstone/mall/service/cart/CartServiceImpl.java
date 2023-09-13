@@ -3,12 +3,16 @@ package com.capstone.mall.service.cart;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.cart.Cart;
 import com.capstone.mall.model.cart.CartRequestDto;
+import com.capstone.mall.model.cart.CartResponseDto;
+import com.capstone.mall.model.item.Item;
 import com.capstone.mall.repository.JpaCartRepository;
+import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +22,7 @@ public class CartServiceImpl implements CartService {
 
     private final JpaCartRepository cartRepository;
     private final ResponseService responseService;
+    private final JpaItemRepository itemRepository;
 
     @Override
     public ResponseDto addCart(CartRequestDto cartRequestDto) {
@@ -36,7 +41,30 @@ public class CartServiceImpl implements CartService {
     public ResponseDto readCartList(String userId) {
         List<Cart> cartList = cartRepository.findByUserId(userId);
 
-        return responseService.createResponseDto(200, "", cartList);
+        List<CartResponseDto> carts = new ArrayList<>();
+
+        for (Cart cart : cartList) {
+            System.out.println(cart.getCartId());
+            Item item = itemRepository.findById(cart.getItemId()).orElse(null);
+
+            if (item == null) {
+                return responseService.createResponseDto(200, "deleted items in cart ", null);
+            }
+
+            CartResponseDto cartResponseDto = CartResponseDto.builder()
+                    .cartId(cart.getCartId())
+                    .itemId(cart.getItemId())
+                    .name(item.getName())
+                    .quantity(cart.getQuantity())
+                    .price(item.getPrice())
+                    .image1(item.getImage1())
+                    .stock(item.getStock())
+                    .build();
+
+            carts.add(cartResponseDto);
+        }
+
+        return responseService.createResponseDto(200, "", carts);
     }
 
     @Override

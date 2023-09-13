@@ -1,0 +1,22 @@
+CREATE DEFINER=`root`@`%` PROCEDURE `GetItemInfoByItemId`(
+    IN in_item_id INT
+)
+BEGIN
+    SELECT
+        i.item_id AS itemId,
+        i.seller_id AS sellerId,
+        i.category_id AS categoryId,
+        i.name AS name,
+        i.image_1 AS image1,
+        i.image_2 AS image2,
+        i.image_3 AS image3,
+        i.content AS content,
+        i.price AS price,
+        AVG(r.rate) AS itemAvgReview,
+        COUNT(r.item_id) AS itemReviewCount,
+        i.stock AS stock
+    FROM item i
+    LEFT JOIN review r ON i.item_id = r.item_id
+    WHERE i.item_id = in_item_id
+    GROUP BY i.item_id;
+END

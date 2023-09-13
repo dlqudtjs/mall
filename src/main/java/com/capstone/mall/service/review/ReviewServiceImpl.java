@@ -2,6 +2,7 @@ package com.capstone.mall.service.review;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.review.Review;
+import com.capstone.mall.model.review.ReviewListResponseDto;
 import com.capstone.mall.model.review.ReviewRequestDto;
 import com.capstone.mall.repository.JpaReviewRepository;
 import com.capstone.mall.service.response.ResponseService;
@@ -44,7 +45,12 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviews = pagination(reviews, pageNum, pageSize);
 
-        return responseService.createResponseDto(200, "", reviews);
+        ReviewListResponseDto reviewListResponseDto = ReviewListResponseDto.builder()
+                .reviews(reviews)
+                .totalPage(totalPage)
+                .build();
+
+        return responseService.createResponseDto(200, "", reviewListResponseDto);
     }
 
     private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {

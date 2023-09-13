@@ -2,6 +2,7 @@ package com.capstone.mall.repository;
 
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.model.item.ItemListProjectionInterface;
+import com.capstone.mall.model.item.ItemProjectionInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,4 +25,8 @@ public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
     @Query(value = "CALL GetItemReviewCount(:itemId)", nativeQuery = true)
     int callGetItemReviewCount(Long itemId);
+
+    @Query(value = "CALL GetItemInfoByItemId(:itemId)", nativeQuery = true)
+    Optional<ItemProjectionInterface> callGetItemInfoByItemId(Long itemId);
+
 }

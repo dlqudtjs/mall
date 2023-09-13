@@ -31,7 +31,6 @@ public class JwtTokenProvider {
     @Value("${jwt.token.refresh.validity}")
     private long refreshTokenValidityInMilliseconds;
 
-
     private final MyUserDetails myUserDetails;
     private final JpaTokenRepository jpaTokenRepository;
 
