@@ -5,7 +5,7 @@ import com.capstone.mall.model.cart.CartRequestDto;
 
 public interface CartService {
 
-    ResponseDto addCart(CartRequestDto cartRequestDto);
+    ResponseDto addCart(String userId, CartRequestDto cartRequestDto);
 
     ResponseDto readCartList(String userId);
 

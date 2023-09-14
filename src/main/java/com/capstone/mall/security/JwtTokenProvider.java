@@ -1,6 +1,6 @@
 package com.capstone.mall.security;
 
-import com.capstone.mall.model.user.Role;
+import com.capstone.mall.model.token.Token;
 import com.capstone.mall.repository.JpaTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class JwtTokenProvider {
     private long refreshTokenValidityInMilliseconds;
 
     private final MyUserDetails myUserDetails;
-    private final JpaTokenRepository jpaTokenRepository;
+    private final JpaTokenRepository tokenRepository;
 
     @PostConstruct
     protected void init() {
@@ -51,7 +52,7 @@ public class JwtTokenProvider {
     }
 
     // accessToken 생성
-    public String createAccessToken(String userId, Role role) {
+    public String createAccessToken(String userId, String role) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("roles", role);
 
@@ -67,7 +68,8 @@ public class JwtTokenProvider {
     }
 
     // refreshToken 생성
-    public String createRefreshToken(String userId, Role role) {
+    @Transactional
+    public String createRefreshToken(String userId, String role) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("roles", role);
 
@@ -82,7 +84,17 @@ public class JwtTokenProvider {
                 .compact();
 
         // DB 에 refreshToken 저장 (존재하면 update, 없으면 insert)
-        jpaTokenRepository.upsertToken(userId, token);
+        Token refreshToken = tokenRepository.findByUserId(userId).orElse(null);
+        if (refreshToken == null) {
+            Token saveToken = Token.builder()
+                    .refreshToken(token)
+                    .userId(userId)
+                    .build();
+
+            tokenRepository.save(saveToken);
+        } else {
+            refreshToken.setRefreshToken(token);
+        }
 
         return token;
     }
@@ -92,6 +104,21 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         UserDetails userdetails = myUserDetails.loadUserByUsername(this.getUserId(token));
         return new UsernamePasswordAuthenticationToken(userdetails, "", userdetails.getAuthorities());
+    }
+
+    public String getRole(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("roles", String.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String getUserId(String token) {
@@ -113,9 +140,5 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public String getToken(String token) {
-        return token.substring(7);
     }
 }

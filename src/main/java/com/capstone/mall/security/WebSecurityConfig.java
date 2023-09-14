@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,16 +30,11 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests((authorizeRequests) ->
-                                authorizeRequests
-                                        .anyRequest().permitAll()
-//                                        .anyRequest().authenticated()
-//                                .requestMatchers("/api/public/**").permitAll()
-//                                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
-//                                        .requestMatchers("/api/sellers/**").hasRole("SELLER")
-//                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//
-//                                // 나머지 요청은 인증만 하면 허용
-//                                .requestMatchers("/api/**").permitAll()
+                        authorizeRequests
+                                .requestMatchers("/api/users/**").hasAnyRole("USER", "SELLER", "ADMIN")
+                                .requestMatchers("/api/sellers/**").hasAnyRole("SELLER", "ADMIN")
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .anyRequest().permitAll()
                 )
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
@@ -50,6 +46,11 @@ public class WebSecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/api/public/**");
     }
 
     @Bean

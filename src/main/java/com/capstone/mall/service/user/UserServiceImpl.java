@@ -3,17 +3,17 @@ package com.capstone.mall.service.user;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.token.TokenResponse;
-import com.capstone.mall.model.user.Role;
 import com.capstone.mall.model.user.User;
 import com.capstone.mall.model.user.UserRequestDto;
 import com.capstone.mall.repository.JpaUserRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -22,6 +22,7 @@ import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UserServiceImpl implements UserService {
 
@@ -30,7 +31,6 @@ public class UserServiceImpl implements UserService {
 
     private final JpaUserRepository userRepository;
     private final ResponseService responseService;
-    private final PasswordEncoder BCryptPasswordEncoder;
     private final JwtTokenProvider tokenProvider;
 
     @Override
@@ -39,12 +39,14 @@ public class UserServiceImpl implements UserService {
             return responseService.createResponseDto(401, "Invalid User Id", null);
         }
 
+        User user = userRepository.findByMetaIdNative(metaId).orElse(null);
+
         // 이미 존재하는 MetaId 인지 확인 후 없으면 생성
-        if (userRepository.findByMetaId(metaId).isEmpty()) {
-            User user = User.builder()
+        if (user == null) {
+            user = User.builder()
                     .metaId(metaId)
                     .userId(getNanoId())
-                    .role(Role.USER)
+                    .role("ROLE_USER")
                     .build();
 
             userRepository.save(user);
@@ -52,9 +54,6 @@ public class UserServiceImpl implements UserService {
 
         // DB 반영
         userRepository.flush();
-
-        // MetaId 에 해당하는 User 조회 (userId, role 을 token 에 담기 위해)
-        User user = userRepository.findByMetaId(metaId).get();
 
         TokenResponse tokenResponse = TokenResponse.builder()
                 .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
@@ -65,8 +64,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseDto refresh(String refreshToken) {
-        String token = tokenProvider.getToken(refreshToken);
+    public ResponseDto refresh(String refreshToken, HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
 
         if (!tokenProvider.validateToken(token)) {
             return responseService.createResponseDto(401, "Invalid Token", null);
@@ -96,10 +95,23 @@ public class UserServiceImpl implements UserService {
             return responseService.createResponseDto(400, "ID does not exist", null);
         }
 
+        if (!checkRole(userRequestDto.getRole())) {
+            return responseService.createResponseDto(200, "Invalid Role", null);
+        }
+
         user.setRole(userRequestDto.getRole());
 
         return responseService.createResponseDto(200, "", user.getUserId());
     }
+
+    private boolean checkRole(String role) {
+        if (role.equals("ROLE_USER") || role.equals("ROLE_ADMIN") || role.equals("ROLE_SELLER")) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public String decrypt(String clientKey) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");

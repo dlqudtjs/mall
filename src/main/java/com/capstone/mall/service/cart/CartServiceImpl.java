@@ -25,9 +25,9 @@ public class CartServiceImpl implements CartService {
     private final JpaItemRepository itemRepository;
 
     @Override
-    public ResponseDto addCart(CartRequestDto cartRequestDto) {
+    public ResponseDto addCart(String userId, CartRequestDto cartRequestDto) {
         Cart cart = Cart.builder()
-                .userId(cartRequestDto.getUserId())
+                .userId(userId)
                 .itemId(cartRequestDto.getItemId())
                 .quantity(cartRequestDto.getQuantity())
                 .build();

@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MyUserDetails implements UserDetailsService {
@@ -16,22 +18,18 @@ public class MyUserDetails implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserId(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Optional<User> findUser = userRepository.findByUserId(username);
 
-        /*
-         1. UserDetails 를 구현한 User 를 반환하는 방법
-         2. UserDetails 를 구현하지 않은 User 를 여기서 UserDetails 로 변환하여 반환하는 방법 중
-          두번 째 방법을 사용함.
-         */
-        return org.springframework.security.core.userdetails.User
-                .withUsername(username)
-                .password(null)
-                .authorities(user.getRole().getValue())
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(false)
-                .build();
+        if (findUser.isPresent()) {
+            User user = User.builder()
+                    .userId(findUser.get().getUserId())
+                    .metaId(findUser.get().getMetaId())
+                    .role(findUser.get().getRole())
+                    .build();
+
+            return user;
+        }
+
+        return null;
     }
 }

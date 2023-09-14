@@ -9,5 +9,5 @@ public class UserRequestDto {
 
     private String checkId;
 
-    private Role role;
+    private String role;
 }
