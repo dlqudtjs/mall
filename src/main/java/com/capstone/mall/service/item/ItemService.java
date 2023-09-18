@@ -11,6 +11,9 @@ public interface ItemService {
     // 카테고리로 아이템 리스트 조회
     ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sortType);
 
+    // 판매중인 상품 목록 조회 (판매자 전용)
+    ResponseDto readItemListBySellerId(Long sellerId, int pageNum, int pageSize);
+
     ResponseDto createItem(ItemRequestDto itemRequestDto);
 
     ResponseDto readItem(Long itemId);

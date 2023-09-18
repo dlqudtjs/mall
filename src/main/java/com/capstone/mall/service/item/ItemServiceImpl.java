@@ -114,6 +114,31 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public ResponseDto readItemListBySellerId(Long sellerId, int pageNum, int pageSize) {
+        List<ItemListProjectionInterface> items = itemRepository.callGetItemsBySellerId(sellerId).orElse(null);
+
+        if (items == null) {
+            return responseService.createResponseDto(200, "", null);
+        }
+
+        List<ItemListProjection> itemList = new ArrayList<>();
+        itemList = getItems(items, itemList);
+
+        // 총 페이지 수
+        int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
+
+        // 페이지네이션
+        itemList = pagination(itemList, pageNum, pageSize);
+
+        ItemListResponseDto itemResponseDto = ItemListResponseDto.builder()
+                .items(itemList)
+                .totalPage(totalPage)
+                .build();
+
+        return responseService.createResponseDto(200, "", itemResponseDto);
+    }
+
+    @Override
     public ResponseDto createItem(ItemRequestDto itemRequestDto) {
         Item item = Item.builder()
                 .sellerId(itemRequestDto.getSellerId())

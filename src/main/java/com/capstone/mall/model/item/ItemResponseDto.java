@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 @Getter
+// 아이템 상세 조회 시 응답으로 보내는 DTO
 public class ItemResponseDto {
 
     private Long itemId;

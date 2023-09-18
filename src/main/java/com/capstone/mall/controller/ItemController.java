@@ -43,6 +43,15 @@ public class ItemController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    @GetMapping("/sellers/items/{sellerId}")
+    public ResponseEntity<ResponseDto> readItemListBySellerId(@PathVariable Long sellerId,
+                                                              @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                              @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        ResponseDto responseDto = itemService.readItemListBySellerId(sellerId, pageNum, pageSize);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
+
     @PostMapping("/sellers/items")
     public ResponseEntity<ResponseDto> createItem(@RequestBody ItemRequestDto itemRequestDto) {
         ResponseDto responseDto = itemService.createItem(itemRequestDto);
@@ -50,4 +59,17 @@ public class ItemController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    @PatchMapping("/sellers/items/{itemId}")
+    public ResponseEntity<ResponseDto> updateItem(@PathVariable Long itemId, @RequestBody ItemRequestDto itemRequestDto) {
+        ResponseDto responseDto = itemService.updateItem(itemId, itemRequestDto);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
+
+    @DeleteMapping("/sellers/items/{itemId}")
+    public ResponseEntity<ResponseDto> deleteItem(@PathVariable Long itemId) {
+        ResponseDto responseDto = itemService.deleteItem(itemId);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
 }

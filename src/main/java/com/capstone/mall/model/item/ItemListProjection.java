@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
+// 아이템 리스트 조회 시 필요한 정보를 담는 DTO (프로젝션)
 public class ItemListProjection {
 
     Long itemId;
@@ -22,4 +23,5 @@ public class ItemListProjection {
     int reviewCount;
 
     double rate;
+
 }

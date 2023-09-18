@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
+// 아이템 생성 시 요청으로 받는 DTO
 public class ItemRequestDto {
 
     private String sellerId;
