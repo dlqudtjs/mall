@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService {
         TokenResponse tokenResponse = TokenResponse.builder()
                 .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
                 .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
+                .userId(user.getUserId())
                 .build();
 
         return responseService.createResponseDto(200, "", tokenResponse);
@@ -82,6 +83,7 @@ public class UserServiceImpl implements UserService {
         TokenResponse tokenResponse = TokenResponse.builder()
                 .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
                 .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
+                .userId(user.getUserId())
                 .build();
 
         return responseService.createResponseDto(200, "", tokenResponse);

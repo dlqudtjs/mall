@@ -1,16 +1,18 @@
 package com.capstone.mall.service.review;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.review.Review;
-import com.capstone.mall.model.review.ReviewListResponseDto;
-import com.capstone.mall.model.review.ReviewRequestDto;
+import com.capstone.mall.model.item.Item;
+import com.capstone.mall.model.review.*;
+import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaReviewRepository;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ResponseService responseService;
     private final JpaReviewRepository reviewRepository;
+    private final JpaItemRepository itemRepository;
 
     /*
      * sortType:
@@ -43,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 총 페이지 수
         int totalPage = (int) Math.ceil(reviews.size() / (double) pageSize);
 
+        // 페이지네이션
         reviews = pagination(reviews, pageNum, pageSize);
 
         ReviewListResponseDto reviewListResponseDto = ReviewListResponseDto.builder()
@@ -53,20 +57,52 @@ public class ReviewServiceImpl implements ReviewService {
         return responseService.createResponseDto(200, "", reviewListResponseDto);
     }
 
-    private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {
-        pageNum = Math.max(pageNum, 1);
-        int endIdx = Math.min(pageNum * pageSize, reviewList.size());
+    @Override
+    public ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize) {
+        List<Review> reviews = reviewRepository.findAllByUserId(userId);
 
-        reviewList = reviewList.subList((pageNum - 1) * pageSize, endIdx);
+        if (reviews == null) {
+            return responseService.createResponseDto(200, "", null);
+        }
 
-        return reviewList;
+        // 총 페이지 수
+        int totalPage = (int) Math.ceil(reviews.size() / (double) pageSize);
+
+        // 페이지네이션
+        reviews = pagination(reviews, pageNum, pageSize);
+
+        List<ReviewListByUserId> reviewListByUserId = new ArrayList<>();
+
+        for (Review review : reviews) {
+            Optional<Item> item = itemRepository.findById(review.getItemId());
+            reviewListByUserId.add(ReviewListByUserId.builder()
+                    .userId(review.getUserId())
+                    .itemId(review.getItemId())
+                    .itemName(item.isEmpty() ? "삭제된 상품" : item.get().getName())
+                    .itemImage(item.isEmpty() ? "" : item.get().getImage1())
+                    .content(review.getContent())
+                    .reviewImage(review.getImage())
+                    .rate(review.getRate())
+                    .createdAt(review.getCreatedAt())
+                    .updatedAt(review.getUpdatedAt())
+                    .build());
+        }
+
+        ReviewListByUserIdResponseDto reviewListByUserIdResponseDto = ReviewListByUserIdResponseDto.builder()
+                .reviews(reviewListByUserId)
+                .totalPage(totalPage)
+                .build();
+
+
+        return responseService.createResponseDto(200, "", reviewListByUserIdResponseDto);
     }
 
+
     @Override
-    public ResponseDto createReview(ReviewRequestDto reviewRequestDto) {
+    public ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto) {
         Review review = Review.builder()
                 .itemId(reviewRequestDto.getItemId())
-                .userId(reviewRequestDto.getUserId())
+                .userId(userId)
                 .content(reviewRequestDto.getContent())
                 .image(reviewRequestDto.getImage())
                 .rate(reviewRequestDto.getRate())
@@ -91,6 +127,15 @@ public class ReviewServiceImpl implements ReviewService {
         review.setRate(reviewRequestDto.getRate());
 
         return responseService.createResponseDto(200, "", review.getReviewId());
+    }
+
+    private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {
+        pageNum = Math.max(pageNum, 1);
+        int endIdx = Math.min(pageNum * pageSize, reviewList.size());
+
+        reviewList = reviewList.subList((pageNum - 1) * pageSize, endIdx);
+
+        return reviewList;
     }
 
     @Override

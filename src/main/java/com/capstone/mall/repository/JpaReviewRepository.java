@@ -9,7 +9,7 @@ public interface JpaReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findAllByItemIdOrderByCreatedAtDesc(Long itemId);
 
-    List<Review> findAllByItemIdOrderByCreatedAt(Long itemId);
+    List<Review> findAllByUserId(String userId);
 
     List<Review> findAllByItemIdOrderByRateDesc(Long itemId);
 

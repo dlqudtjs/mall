@@ -26,9 +26,19 @@ public class ReviewController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
-    @PostMapping("/users/reviews")
-    public ResponseEntity<ResponseDto> createReview(@RequestBody ReviewRequestDto reviewRequestDto) {
-        ResponseDto responseDto = reviewService.createReview(reviewRequestDto);
+    @GetMapping("/users/reviews/{userId}")
+    public ResponseEntity<ResponseDto> readReview(@PathVariable String userId,
+                                                  @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                  @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        ResponseDto responseDto = reviewService.readReviewListByUserId(userId, pageNum, pageSize);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
+
+    @PostMapping("/users/reviews/{userId}")
+    public ResponseEntity<ResponseDto> createReview(@PathVariable String userId,
+                                                    @RequestBody ReviewRequestDto reviewRequestDto) {
+        ResponseDto responseDto = reviewService.createReview(userId, reviewRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
