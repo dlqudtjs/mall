@@ -11,6 +11,8 @@ import java.util.Date;
 @Setter
 public class ReviewListByUserId {
 
+    private Long reviewId;
+
     private String userId;
 
     private Long itemId;

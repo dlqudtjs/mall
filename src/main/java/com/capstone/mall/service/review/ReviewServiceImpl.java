@@ -76,6 +76,7 @@ public class ReviewServiceImpl implements ReviewService {
         for (Review review : reviews) {
             Optional<Item> item = itemRepository.findById(review.getItemId());
             reviewListByUserId.add(ReviewListByUserId.builder()
+                    .reviewId(review.getReviewId())
                     .userId(review.getUserId())
                     .itemId(review.getItemId())
                     .itemName(item.isEmpty() ? "삭제된 상품" : item.get().getName())
