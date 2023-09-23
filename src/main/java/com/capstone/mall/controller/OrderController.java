@@ -35,4 +35,11 @@ public class OrderController {
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
+
+    @GetMapping("/users/orders/{userId}")
+    public ResponseEntity<ResponseDto> getPurchaseList(@PathVariable String userId) {
+        ResponseDto responseDto = orderService.getPurchaseList(userId);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
 }

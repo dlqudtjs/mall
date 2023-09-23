@@ -14,7 +14,7 @@ public interface ItemService {
     // 판매중인 상품 목록 조회 (판매자 전용)
     ResponseDto readItemListBySellerId(Long sellerId, int pageNum, int pageSize);
 
-    ResponseDto createItem(ItemRequestDto itemRequestDto);
+    ResponseDto createItem(String sellerId, ItemRequestDto itemRequestDto);
 
     ResponseDto readItem(Long itemId);
 

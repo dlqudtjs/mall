@@ -49,7 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .sellerId(item.isPresent() ? item.get().getSellerId() : "삭제된 상품")
                     .price(item.map(Item::getPrice).orElse(0))
                     .quantity(itemMap.get(itemId))
-                    .result(item.map(value -> value.getPrice() * itemMap.get(itemId)).orElse(0))
+                    .result(0)
                     .build();
 
             orderDetailRepository.save(orderDetail);

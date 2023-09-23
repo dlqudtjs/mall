@@ -52,9 +52,9 @@ public class ItemController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
-    @PostMapping("/sellers/items")
-    public ResponseEntity<ResponseDto> createItem(@RequestBody ItemRequestDto itemRequestDto) {
-        ResponseDto responseDto = itemService.createItem(itemRequestDto);
+    @PostMapping("/sellers/items/{sellerId}")
+    public ResponseEntity<ResponseDto> createItem(@PathVariable String sellerId, @RequestBody ItemRequestDto itemRequestDto) {
+        ResponseDto responseDto = itemService.createItem(sellerId, itemRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

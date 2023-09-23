@@ -139,9 +139,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto createItem(ItemRequestDto itemRequestDto) {
+    public ResponseDto createItem(String sellerId, ItemRequestDto itemRequestDto) {
         Item item = Item.builder()
-                .sellerId(itemRequestDto.getSellerId())
+                .sellerId(sellerId)
                 .name(itemRequestDto.getName())
                 .categoryId(itemRequestDto.getCategoryId())
                 .price(itemRequestDto.getPrice())

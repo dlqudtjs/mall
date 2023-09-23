@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 @Builder
@@ -16,7 +19,8 @@ public class OrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "order_detail_id")
+    private Long orderDetailId;
 
     @Column(name = "order_id")
     private Long orderId;
@@ -32,4 +36,8 @@ public class OrderDetail {
     private int quantity;
 
     private int result;
+
+    @Column(name = "order_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
+    private Date orderDate;
 }

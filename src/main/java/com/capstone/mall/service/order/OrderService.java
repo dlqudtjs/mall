@@ -10,4 +10,6 @@ public interface OrderService {
     ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto);
 
     ResponseDto getSoldOrderList(String userId);
+
+    ResponseDto getPurchaseList(String userId);
 }
