@@ -78,7 +78,7 @@ public class CartServiceImpl implements CartService {
         }
 
         if (jwtTokenProvider.getUserId(token).equals(cart.getUserId())) {
-            return responseService.createResponseDto(400, "token does not match", null);
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         cartRepository.deleteById(cartId);
@@ -91,11 +91,11 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId).orElse(null);
 
         if (cart == null) {
-            return responseService.createResponseDto(200, "Not Found Cart", null);
+            return responseService.createResponseDto(200, "cart does not exist", null);
         }
 
         if (jwtTokenProvider.getUserId(token).equals(cart.getUserId())) {
-            return responseService.createResponseDto(400, "token does not match", null);
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         cart.setQuantity(cartRequestDto.getQuantity());

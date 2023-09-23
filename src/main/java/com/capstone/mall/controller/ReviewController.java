@@ -44,15 +44,15 @@ public class ReviewController {
     }
 
     @PatchMapping("/users/reviews/{reviewId}")
-    public ResponseEntity<ResponseDto> updateReview(@PathVariable Long reviewId, @RequestBody ReviewRequestDto reviewRequestDto) {
-        ResponseDto responseDto = reviewService.updateReview(reviewId, reviewRequestDto);
+    public ResponseEntity<ResponseDto> updateReview(@PathVariable Long reviewId, @RequestBody ReviewRequestDto reviewRequestDto, @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = reviewService.updateReview(reviewId, reviewRequestDto, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
     @DeleteMapping("/users/reviews/{reviewId}")
-    public ResponseEntity<ResponseDto> deleteReview(@PathVariable Long reviewId) {
-        ResponseDto responseDto = reviewService.deleteReview(reviewId);
+    public ResponseEntity<ResponseDto> deleteReview(@PathVariable Long reviewId, @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = reviewService.deleteReview(reviewId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

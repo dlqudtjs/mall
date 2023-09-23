@@ -115,11 +115,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) {
+    public ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, String token) {
         Review review = reviewRepository.findById(reviewId).orElse(null);
 
         if (review == null) {
-            return responseService.createResponseDto(200, "존재하지 않는 리뷰입니다.", null);
+            return responseService.createResponseDto(200, "review does not exist", null);
+        }
+
+        if (!review.getUserId().equals(token)) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         review.setUserId(reviewRequestDto.getUserId());
@@ -128,6 +132,21 @@ public class ReviewServiceImpl implements ReviewService {
         review.setRate(reviewRequestDto.getRate());
 
         return responseService.createResponseDto(200, "", review.getReviewId());
+    }
+
+    @Override
+    public ResponseDto deleteReview(Long reviewId, String token) {
+        if (!reviewRepository.existsById(reviewId)) {
+            return responseService.createResponseDto(200, "review does not exist", null);
+        }
+
+        if (!reviewRepository.findById(reviewId).get().getUserId().equals(token)) {
+            return responseService.createResponseDto(403, "token does not match", null);
+        }
+
+        reviewRepository.deleteById(reviewId);
+
+        return responseService.createResponseDto(200, "", reviewId);
     }
 
     private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {
@@ -139,14 +158,4 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewList;
     }
 
-    @Override
-    public ResponseDto deleteReview(Long reviewId) {
-        if (!reviewRepository.existsById(reviewId)) {
-            return responseService.createResponseDto(200, "review does not exist", null);
-        }
-
-        reviewRepository.deleteById(reviewId);
-
-        return responseService.createResponseDto(200, "", reviewId);
-    }
 }

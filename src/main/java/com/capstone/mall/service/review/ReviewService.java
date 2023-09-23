@@ -9,9 +9,9 @@ public interface ReviewService {
 
     ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto);
 
-    ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto);
+    ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, String token);
 
-    ResponseDto deleteReview(Long reviewId);
+    ResponseDto deleteReview(Long reviewId, String token);
 
     ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize);
 }
