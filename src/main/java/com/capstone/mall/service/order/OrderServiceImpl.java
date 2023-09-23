@@ -2,8 +2,11 @@ package com.capstone.mall.service.order;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.item.Item;
+import com.capstone.mall.model.order.OrderDetail;
+import com.capstone.mall.model.order.OrderRequestDto;
 import com.capstone.mall.model.order.orderForm.OrderFormDetail;
 import com.capstone.mall.repository.JpaItemRepository;
+import com.capstone.mall.repository.JpaOrderDetailRepository;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final ResponseService responseService;
     private final JpaItemRepository itemRepository;
+    private final JpaOrderDetailRepository orderDetailRepository;
 
     @Override
     public ResponseDto createOrderForm(String userId, String items) {
@@ -45,5 +49,18 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return responseService.createResponseDto(200, "", orderFormDetails);
+    }
+
+    @Override
+    public ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto) {
+        Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailId);
+
+        if (orderDetail.isEmpty()) {
+            return responseService.createResponseDto(200, "존재하지 않는 주문입니다.", null);
+        }
+
+        orderDetail.get().setResult(orderRequestDto.getResult());
+
+        return responseService.createResponseDto(200, "", orderDetail.get().getOrderId());
     }
 }
