@@ -62,8 +62,8 @@ public class OrderServiceImpl implements OrderService {
             return responseService.createResponseDto(200, "orderDetail does not exist", null);
         }
 
-        if (!orderDetail.get().getSellerId().equals(jwtTokenProvider.getUserId(token))) {
-            return responseService.createResponseDto(200, "token does not match", null);
+        if (!orderDetail.get().getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         orderDetail.get().setResult(orderRequestDto.getResult());
@@ -79,8 +79,8 @@ public class OrderServiceImpl implements OrderService {
             return responseService.createResponseDto(200, "order does not exist", null);
         }
 
-        if (!userId.equals(jwtTokenProvider.getUserId(token))) {
-            return responseService.createResponseDto(200, "token does not match", null);
+        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         List<OrderDetailResponseDto> orders = new ArrayList<>();
@@ -108,8 +108,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseDto getPurchaseList(String userId, String token) {
-        if (!userId.equals(jwtTokenProvider.getUserId(token))) {
-            return responseService.createResponseDto(200, "token does not match", null);
+        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         // order 를 담기 위한 List

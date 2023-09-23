@@ -12,13 +12,13 @@ public interface ItemService {
     ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sortType);
 
     // 판매중인 상품 목록 조회 (판매자 전용)
-    ResponseDto readItemListBySellerId(Long sellerId, int pageNum, int pageSize);
+    ResponseDto readItemListBySellerId(String sellerId, int pageNum, int pageSize, String token);
 
     ResponseDto createItem(String sellerId, ItemRequestDto itemRequestDto);
 
     ResponseDto readItem(Long itemId);
 
-    ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto);
+    ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto, String token);
 
-    ResponseDto deleteItem(Long itemId);
+    ResponseDto deleteItem(Long itemId, String token);
 }

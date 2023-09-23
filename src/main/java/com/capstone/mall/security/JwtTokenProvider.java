@@ -126,4 +126,9 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public String getUserIdByBearerToken(String bearerToken) {
+        String token = bearerToken.substring(7);
+        return getUserId(token);
+    }
 }

@@ -24,8 +24,8 @@ public class CartController {
     }
 
     @GetMapping("/users/carts/{userId}")
-    public ResponseEntity<ResponseDto> readCartList(@PathVariable String userId) {
-        ResponseDto responseDto = cartService.readCartList(userId);
+    public ResponseEntity<ResponseDto> readCartList(@PathVariable String userId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        ResponseDto responseDto = cartService.readCartList(userId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

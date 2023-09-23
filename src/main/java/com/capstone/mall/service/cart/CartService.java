@@ -7,7 +7,7 @@ public interface CartService {
 
     ResponseDto addCart(String userId, CartRequestDto cartRequestDto);
 
-    ResponseDto readCartList(String userId);
+    ResponseDto readCartList(String userId, String token);
 
     ResponseDto deleteCart(Long cartId, String token);
 

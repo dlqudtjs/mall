@@ -43,11 +43,13 @@ public class ItemController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    // 판매중인 상품 목록 조회
     @GetMapping("/sellers/items/{sellerId}")
-    public ResponseEntity<ResponseDto> readItemListBySellerId(@PathVariable Long sellerId,
+    public ResponseEntity<ResponseDto> readItemListBySellerId(@PathVariable String sellerId,
                                                               @RequestParam(required = false, defaultValue = "1") int pageNum,
-                                                              @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        ResponseDto responseDto = itemService.readItemListBySellerId(sellerId, pageNum, pageSize);
+                                                              @RequestParam(required = false, defaultValue = "10") int pageSize,
+                                                              @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = itemService.readItemListBySellerId(sellerId, pageNum, pageSize, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
@@ -60,15 +62,17 @@ public class ItemController {
     }
 
     @PatchMapping("/sellers/items/{itemId}")
-    public ResponseEntity<ResponseDto> updateItem(@PathVariable Long itemId, @RequestBody ItemRequestDto itemRequestDto) {
-        ResponseDto responseDto = itemService.updateItem(itemId, itemRequestDto);
+    public ResponseEntity<ResponseDto> updateItem(@PathVariable Long itemId,
+                                                  @RequestBody ItemRequestDto itemRequestDto,
+                                                  @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = itemService.updateItem(itemId, itemRequestDto, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
     @DeleteMapping("/sellers/items/{itemId}")
-    public ResponseEntity<ResponseDto> deleteItem(@PathVariable Long itemId) {
-        ResponseDto responseDto = itemService.deleteItem(itemId);
+    public ResponseEntity<ResponseDto> deleteItem(@PathVariable Long itemId, @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = itemService.deleteItem(itemId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

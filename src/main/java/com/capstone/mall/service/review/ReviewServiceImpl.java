@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
             return responseService.createResponseDto(200, "", null);
         }
 
-        if (!userId.equals(token)) {
+        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -128,7 +128,7 @@ public class ReviewServiceImpl implements ReviewService {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!review.getUserId().equals(jwtTokenProvider.getUserId(token))) {
+        if (!review.getUserId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -148,7 +148,7 @@ public class ReviewServiceImpl implements ReviewService {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!review.getUserId().equals(jwtTokenProvider.getUserId(token))) {
+        if (!review.getUserId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 

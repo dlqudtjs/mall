@@ -30,6 +30,6 @@ public interface JpaItemRepository extends JpaRepository<Item, Long> {
     Optional<ItemProjectionInterface> callGetItemInfoByItemId(Long itemId);
 
     @Query(value = "CALL GetItemsBySellerId(:sellerId)", nativeQuery = true)
-    Optional<List<ItemListProjectionInterface>> callGetItemsBySellerId(Long sellerId);
+    Optional<List<ItemListProjectionInterface>> callGetItemsBySellerId(String sellerId);
 
 }

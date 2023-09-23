@@ -8,6 +8,7 @@ import com.capstone.mall.model.keyword.Keyword;
 import com.capstone.mall.repository.JpaItemKeywordRepository;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaKeywordRepository;
+import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
     private final ResponseServiceImpl responseService;
     private final JpaKeywordRepository keywordRepository;
     private final JpaItemKeywordRepository itemKeywordRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public ResponseDto readItem(Long itemId) {
@@ -114,12 +116,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto readItemListBySellerId(Long sellerId, int pageNum, int pageSize) {
+    public ResponseDto readItemListBySellerId(String sellerId, int pageNum, int pageSize, String token) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(sellerId)) {
+            return responseService.createResponseDto(403, "token does not match", null);
+        }
+
         List<ItemListProjectionInterface> items = itemRepository.callGetItemsBySellerId(sellerId).orElse(null);
 
         if (items == null) {
             return responseService.createResponseDto(200, "", null);
         }
+
 
         List<ItemListProjection> itemList = new ArrayList<>();
         itemList = getItems(items, itemList);
@@ -160,11 +167,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
+    public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto, String token) {
         Item item = itemRepository.findById(itemId).orElse(null);
 
         if (item == null) {
             return responseService.createResponseDto(200, "item does not exist", null);
+        }
+
+        if (!item.getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         item.setSellerId(itemRequestDto.getSellerId());
@@ -181,9 +192,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto deleteItem(Long itemId) {
-        if (itemRepository.existsById(itemId)) {
+    public ResponseDto deleteItem(Long itemId, String token) {
+        Item item = itemRepository.findById(itemId).orElse(null);
+
+        if (item == null) {
             return responseService.createResponseDto(200, "item does not exist", null);
+        }
+
+        if (!item.getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         return responseService.createResponseDto(200, "", itemId);
