@@ -7,6 +7,7 @@ import com.capstone.mall.model.cart.CartResponseDto;
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.repository.JpaCartRepository;
 import com.capstone.mall.repository.JpaItemRepository;
+import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CartServiceImpl implements CartService {
     private final JpaCartRepository cartRepository;
     private final ResponseService responseService;
     private final JpaItemRepository itemRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public ResponseDto addCart(String userId, CartRequestDto cartRequestDto) {
@@ -68,9 +70,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseDto deleteCart(Long cartId) {
-        if (!cartRepository.existsById(cartId)) {
+    public ResponseDto deleteCart(Long cartId, String token) {
+        Cart cart = cartRepository.findById(cartId).orElse(null);
+
+        if (cart == null) {
             return responseService.createResponseDto(200, "cart does not exist", null);
+        }
+
+        if (jwtTokenProvider.getUserId(token).equals(cart.getUserId())) {
+            return responseService.createResponseDto(400, "token does not match", null);
         }
 
         cartRepository.deleteById(cartId);
@@ -79,11 +87,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto) {
+    public ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto, String token) {
         Cart cart = cartRepository.findById(cartId).orElse(null);
 
         if (cart == null) {
             return responseService.createResponseDto(200, "Not Found Cart", null);
+        }
+
+        if (jwtTokenProvider.getUserId(token).equals(cart.getUserId())) {
+            return responseService.createResponseDto(400, "token does not match", null);
         }
 
         cart.setQuantity(cartRequestDto.getQuantity());

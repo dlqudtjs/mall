@@ -9,7 +9,7 @@ public interface CartService {
 
     ResponseDto readCartList(String userId);
 
-    ResponseDto deleteCart(Long cartId);
+    ResponseDto deleteCart(Long cartId, String token);
 
-    ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto);
+    ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto, String token);
 }

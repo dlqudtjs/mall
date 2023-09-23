@@ -4,6 +4,7 @@ import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.cart.CartRequestDto;
 import com.capstone.mall.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,15 +31,15 @@ public class CartController {
     }
 
     @DeleteMapping("/users/carts/{cartId}")
-    public ResponseEntity<ResponseDto> deleteCart(@PathVariable Long cartId) {
-        ResponseDto responseDto = cartService.deleteCart(cartId);
+    public ResponseEntity<ResponseDto> deleteCart(@PathVariable Long cartId, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        ResponseDto responseDto = cartService.deleteCart(cartId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
     @PatchMapping("/users/carts/{cartId}")
-    public ResponseEntity<ResponseDto> updateCart(@PathVariable Long cartId, @RequestBody CartRequestDto cartRequestDto) {
-        ResponseDto responseDto = cartService.updateCart(cartId, cartRequestDto);
+    public ResponseEntity<ResponseDto> updateCart(@PathVariable Long cartId, @RequestBody CartRequestDto cartRequestDto, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        ResponseDto responseDto = cartService.updateCart(cartId, cartRequestDto, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

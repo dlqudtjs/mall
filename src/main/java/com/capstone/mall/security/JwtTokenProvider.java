@@ -106,21 +106,6 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userdetails, "", userdetails.getAuthorities());
     }
 
-    public String getRole(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .get("roles", String.class);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public String getUserId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
