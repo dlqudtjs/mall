@@ -7,9 +7,9 @@ public interface OrderService {
 
     ResponseDto createOrderForm(String userId, String items);
 
-    ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto);
+    ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto, String token);
 
-    ResponseDto getSoldOrderList(String userId);
+    ResponseDto getSoldOrderList(String userId, String token);
 
-    ResponseDto getPurchaseList(String userId);
+    ResponseDto getPurchaseList(String userId, String token);
 }

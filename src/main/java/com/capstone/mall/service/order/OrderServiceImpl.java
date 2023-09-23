@@ -7,6 +7,7 @@ import com.capstone.mall.model.order.orderForm.OrderFormDetail;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaOrderDetailRepository;
 import com.capstone.mall.repository.JpaOrderRepository;
+import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final JpaItemRepository itemRepository;
     private final JpaOrderDetailRepository orderDetailRepository;
     private final JpaOrderRepository orderRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public ResponseDto createOrderForm(String userId, String items) {
@@ -53,11 +55,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto) {
+    public ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto, String token) {
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailId);
 
         if (orderDetail.isEmpty()) {
-            return responseService.createResponseDto(200, "존재하지 않는 주문입니다.", null);
+            return responseService.createResponseDto(200, "orderDetail does not exist", null);
+        }
+
+        if (!orderDetail.get().getSellerId().equals(jwtTokenProvider.getUserId(token))) {
+            return responseService.createResponseDto(200, "token does not match", null);
         }
 
         orderDetail.get().setResult(orderRequestDto.getResult());
@@ -66,11 +72,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseDto getSoldOrderList(String userId) {
+    public ResponseDto getSoldOrderList(String userId, String token) {
         List<OrderDetail> orderDetails = orderDetailRepository.findBySellerId(userId);
 
         if (orderDetails.isEmpty()) {
-            return responseService.createResponseDto(200, "주문 내역이 없습니다.", null);
+            return responseService.createResponseDto(200, "order does not exist", null);
+        }
+
+        if (!userId.equals(jwtTokenProvider.getUserId(token))) {
+            return responseService.createResponseDto(200, "token does not match", null);
         }
 
         List<OrderDetailResponseDto> orders = new ArrayList<>();
@@ -97,7 +107,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseDto getPurchaseList(String userId) {
+    public ResponseDto getPurchaseList(String userId, String token) {
+        if (!userId.equals(jwtTokenProvider.getUserId(token))) {
+            return responseService.createResponseDto(200, "token does not match", null);
+        }
+
         // order 를 담기 위한 List
         List<OrderResponseDto> orders = new ArrayList<>();
 

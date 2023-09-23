@@ -15,6 +15,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // 주문서 폼 생성
     @GetMapping("/users/form/orders/{userId}")
     public ResponseEntity<ResponseDto> createOrderForm(@PathVariable String userId, @RequestParam String items) {
         ResponseDto responseDto = orderService.createOrderForm(userId, items);
@@ -22,23 +23,28 @@ public class OrderController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    // 주문 상태 업데이트
     @PatchMapping("/sellers/orders/{orderDetailId}")
-    public ResponseEntity<ResponseDto> updateOrder(@PathVariable Long orderDetailId, @RequestBody OrderRequestDto orderRequestDto) {
-        ResponseDto responseDto = orderService.updateOrder(orderDetailId, orderRequestDto);
+    public ResponseEntity<ResponseDto> updateOrder(@PathVariable Long orderDetailId,
+                                                   @RequestBody OrderRequestDto orderRequestDto,
+                                                   @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = orderService.updateOrder(orderDetailId, orderRequestDto, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    // 판매한 주문 조회
     @GetMapping("/sellers/orders/{userId}")
-    public ResponseEntity<ResponseDto> getOrderList(@PathVariable String userId) {
-        ResponseDto responseDto = orderService.getSoldOrderList(userId);
+    public ResponseEntity<ResponseDto> getOrderList(@PathVariable String userId, @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = orderService.getSoldOrderList(userId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    // 구매한 주문 조회
     @GetMapping("/users/orders/{userId}")
-    public ResponseEntity<ResponseDto> getPurchaseList(@PathVariable String userId) {
-        ResponseDto responseDto = orderService.getPurchaseList(userId);
+    public ResponseEntity<ResponseDto> getPurchaseList(@PathVariable String userId, @RequestHeader("Authorization") String token) {
+        ResponseDto responseDto = orderService.getPurchaseList(userId, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

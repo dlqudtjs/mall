@@ -5,6 +5,7 @@ import com.capstone.mall.model.item.Item;
 import com.capstone.mall.model.review.*;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaReviewRepository;
+import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ResponseService responseService;
     private final JpaReviewRepository reviewRepository;
     private final JpaItemRepository itemRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /*
      * sortType:
@@ -58,11 +60,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize) {
+    public ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize, String token) {
         List<Review> reviews = reviewRepository.findAllByUserId(userId);
 
         if (reviews == null) {
             return responseService.createResponseDto(200, "", null);
+        }
+
+        if (!userId.equals(token)) {
+            return responseService.createResponseDto(403, "token does not match", null);
         }
 
         // 총 페이지 수
@@ -122,7 +128,7 @@ public class ReviewServiceImpl implements ReviewService {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!review.getUserId().equals(token)) {
+        if (!review.getUserId().equals(jwtTokenProvider.getUserId(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -136,11 +142,13 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ResponseDto deleteReview(Long reviewId, String token) {
-        if (!reviewRepository.existsById(reviewId)) {
+        Review review = reviewRepository.findById(reviewId).orElse(null);
+
+        if (review == null) {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!reviewRepository.findById(reviewId).get().getUserId().equals(token)) {
+        if (!review.getUserId().equals(jwtTokenProvider.getUserId(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 

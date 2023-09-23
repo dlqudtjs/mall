@@ -13,5 +13,5 @@ public interface ReviewService {
 
     ResponseDto deleteReview(Long reviewId, String token);
 
-    ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize);
+    ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize, String token);
 }
