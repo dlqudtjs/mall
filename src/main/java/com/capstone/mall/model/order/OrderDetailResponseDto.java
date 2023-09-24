@@ -14,6 +14,7 @@ public class OrderDetailResponseDto {
     private Long orderDetailId;
     private Long orderId;
     private Long itemId;
+    private String itemName;
     private String sellerId;
     private String image;
     private int price;
