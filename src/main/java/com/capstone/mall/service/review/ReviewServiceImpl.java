@@ -33,7 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
      */
     @Override
     public ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sortType) {
-        List<Review> reviews = null;
+        List<Review> reviews;
 
         if (sortType.equals("n")) {
             reviews = reviewRepository.findAllByItemIdOrderByCreatedAtDesc(itemId);
@@ -117,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review savedReview = reviewRepository.save(review);
 
-        return responseService.createResponseDto(200, "", savedReview.getReviewId());
+        return responseService.createResponseDto(201, "", savedReview.getReviewId());
     }
 
     @Override

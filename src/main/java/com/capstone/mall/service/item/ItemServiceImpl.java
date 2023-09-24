@@ -127,7 +127,6 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(200, "", null);
         }
 
-
         List<ItemListProjection> itemList = new ArrayList<>();
         itemList = getItems(items, itemList);
 
@@ -202,6 +201,8 @@ public class ItemServiceImpl implements ItemService {
         if (!item.getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
+
+        itemRepository.deleteById(itemId);
 
         return responseService.createResponseDto(200, "", itemId);
     }

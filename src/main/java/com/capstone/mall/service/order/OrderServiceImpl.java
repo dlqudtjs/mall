@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
             orderFormDetails.add(orderFormDetail);
         }
 
-        return responseService.createResponseDto(200, "", orderFormDetails);
+        return responseService.createResponseDto(201, "", orderFormDetails);
     }
 
     @Override
