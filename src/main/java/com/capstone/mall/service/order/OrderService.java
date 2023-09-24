@@ -9,7 +9,7 @@ public interface OrderService {
 
     ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto, String token);
 
-    ResponseDto getSoldOrderList(String userId, String token);
+    ResponseDto getSoldOrderList(String userId, int pageNum, int pageSize, String token);
 
-    ResponseDto getPurchaseList(String userId, String token);
+    ResponseDto getPurchaseList(String userId, int pageNum, int pageSize, String token);
 }

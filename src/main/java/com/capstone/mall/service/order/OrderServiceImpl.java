@@ -9,6 +9,7 @@ import com.capstone.mall.repository.JpaOrderDetailRepository;
 import com.capstone.mall.repository.JpaOrderRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
+import com.capstone.mall.service.util.Paginator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseDto getSoldOrderList(String userId, String token) {
+    public ResponseDto getSoldOrderList(String userId, int pageNum, int pageSize, String token) {
         List<OrderDetail> orderDetails = orderDetailRepository.findBySellerId(userId);
 
         if (orderDetails.isEmpty()) {
@@ -83,7 +84,14 @@ public class OrderServiceImpl implements OrderService {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        List<OrderDetailResponseDto> orders = new ArrayList<>();
+        // 총 페이지 수
+        int totalPage = (int) Math.ceil((double) orderDetails.size() / pageSize);
+
+        // 페이지네이션
+        Paginator<OrderDetail> paginator = new Paginator<>();
+        orderDetails = paginator.paginate(orderDetails, pageNum, pageSize);
+
+        List<OrderDetailResponseDto> orderDetailResponseDtoList = new ArrayList<>();
 
         for (OrderDetail orderDetail : orderDetails) {
             Optional<Item> item = itemRepository.findById(orderDetail.getItemId());
@@ -100,23 +108,35 @@ public class OrderServiceImpl implements OrderService {
                     .orderDate(orderDetail.getOrderDate())
                     .build();
 
-            orders.add(orderDetailResponseDto);
+            orderDetailResponseDtoList.add(orderDetailResponseDto);
         }
 
-        return responseService.createResponseDto(200, "", orders);
+        OrderDetailListResponseDto orderListResponseDto = OrderDetailListResponseDto.builder()
+                .orders(orderDetailResponseDtoList)
+                .totalPage(totalPage)
+                .build();
+
+        return responseService.createResponseDto(200, "", orderListResponseDto);
     }
 
     @Override
-    public ResponseDto getPurchaseList(String userId, String token) {
+    public ResponseDto getPurchaseList(String userId, int pageNum, int pageSize, String token) {
         if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        // order 를 담기 위한 List
-        List<OrderResponseDto> orders = new ArrayList<>();
-
-        // order 를 담기 위해 userId 로 조회한다.
+        // order 를 담기 위해 userId 로 조회한다. (orderId 로 orderDetail 을 조회하기 위함)
         List<Order> orderList = orderRepository.findByUserId(userId);
+
+        // order 를 담기 위한 List
+        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
+
+        // 총 페이지 수
+        int totalPage = (int) Math.ceil((double) orderList.size() / pageSize);
+
+        // 페이지네이션
+        Paginator<Order> paginator = new Paginator<>();
+        orderList = paginator.paginate(orderList, pageNum, pageSize);
 
         for (Order order : orderList) {
             // orderDetail 을 담기 위한 List
@@ -151,8 +171,13 @@ public class OrderServiceImpl implements OrderService {
                     .orderDetails(orderDetails)
                     .build();
 
-            orders.add(orderResponseDto);
+            orderResponseDtoList.add(orderResponseDto);
         }
+
+        OrderListResponseDto orders = OrderListResponseDto.builder()
+                .orders(orderResponseDtoList)
+                .totalPage(totalPage)
+                .build();
 
         return responseService.createResponseDto(200, "", orders);
     }
