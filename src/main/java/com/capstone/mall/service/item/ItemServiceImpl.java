@@ -65,17 +65,21 @@ public class ItemServiceImpl implements ItemService {
      */
     @Override
     // 검색으로 아이템 리스트 조회
-    public ResponseDto readItemList(String search, int pageNum, int pageSize, String sortType) {
-        List<ItemListProjectionInterface> items = itemRepository.callGetItemsBySearch(search, sortType);
+    public ResponseDto readItemList(String search, int pageNum, int pageSize, String sort, String sortType) {
+        List<ItemListProjectionInterface> items = itemRepository.itemListByKeyword(search);
 
         if (items == null) {
             return responseService.createResponseDto(200, "", null);
         }
 
+        // Interface 매핑
         List<ItemListProjection> itemList = getItems(items);
 
         // 총 페이지 수
         int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
+
+        // 정렬
+        itemList = listSort(itemList, sort, sortType);
 
         // 페이지네이션
         itemList = pagination(itemList, pageNum, pageSize);
@@ -94,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
     public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
         List<ItemListProjectionInterface> items = itemRepository.itemListByCategoryId(categoryId);
 
+        // Interface 매핑
         List<ItemListProjection> itemList = getItems(items);
 
         // 총 페이지 수
@@ -213,18 +218,18 @@ public class ItemServiceImpl implements ItemService {
                     itemList.sort(Comparator.comparing(ItemListProjection::getCreatedAt));
                 }
             }
-            case "price" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> o2.getPrice() - o1.getPrice());
-                } else {
-                    itemList.sort(Comparator.comparingInt(ItemListProjection::getPrice));
-                }
-            }
             case "avgRating" -> {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> (int) (o2.getAvgRating() - o1.getAvgRating()));
                 } else {
                     itemList.sort((o1, o2) -> (int) (o1.getAvgRating() - o2.getAvgRating()));
+                }
+            }
+            case "price" -> {
+                if (sortType.equals("desc")) {
+                    itemList.sort((o1, o2) -> o2.getPrice() - o1.getPrice());
+                } else {
+                    itemList.sort(Comparator.comparingInt(ItemListProjection::getPrice));
                 }
             }
             case "sales" -> {
@@ -234,7 +239,7 @@ public class ItemServiceImpl implements ItemService {
                     itemList.sort(Comparator.comparingInt(ItemListProjection::getSales));
                 }
             }
-            case "reviewCount" -> {
+            case "stock" -> {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> o2.getReviewCount() - o1.getReviewCount());
                 } else {

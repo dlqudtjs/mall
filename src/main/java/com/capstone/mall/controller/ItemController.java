@@ -24,10 +24,11 @@ public class ItemController {
 
     @GetMapping("/public/items")
     public ResponseEntity<ResponseDto> readItemListBySearch(@RequestParam(required = true) String search,
-                                                            @RequestParam(required = false, defaultValue = "n") String sortType,
+                                                            @RequestParam(required = false, defaultValue = "createdAt") String sort,
+                                                            @RequestParam(required = false, defaultValue = "desc") String sortType,
                                                             @RequestParam(required = false, defaultValue = "1") int pageNum,
                                                             @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        ResponseDto responseDto = itemService.readItemList(search, pageNum, pageSize, sortType);
+        ResponseDto responseDto = itemService.readItemList(search, pageNum, pageSize, sort, sortType);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

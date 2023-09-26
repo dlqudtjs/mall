@@ -11,16 +11,24 @@ import java.util.Optional;
 
 public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
-    String itemListByCategoryId = "SELECT * FROM item_list_by_category_view ";
+    String itemListView = "SELECT * FROM item_list_view ";
+
+    String searchKeyword = "(SELECT item_id\n" +
+            "from itemKeyword\n" +
+            "where keyword_id in\n" +
+            "(SELECT keyword_id \n" +
+            "FROM mall.item_list_by_keyword_view\n" +
+            "where keyword like %:keyword%))";
 
 
-    // 카테고리 정렬
-    @Query(value = itemListByCategoryId + "where categoryId = :categoryId", nativeQuery = true)
+    // 카테고리 별 아이템 리스트 조회
+    @Query(value = itemListView + "where categoryId = :categoryId", nativeQuery = true)
     List<ItemListProjectionInterface> itemListByCategoryId(Long categoryId);
 
 
-    @Query(value = "CALL SearchItemsByKeyword(:search, :sortType)", nativeQuery = true)
-    List<ItemListProjectionInterface> callGetItemsBySearch(String search, String sortType);
+    // 검색 키워드 별 아이템 리스트 조회
+    @Query(value = itemListView + "where itemId in" + searchKeyword, nativeQuery = true)
+    List<ItemListProjectionInterface> itemListByKeyword(String keyword);
 
     @Query(value = "CALL GetItemInfoByItemId(:itemId)", nativeQuery = true)
     Optional<ItemProjectionInterface> callGetItemInfoByItemId(Long itemId);
