@@ -1,0 +1,66 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Cart API Docs
+:toc: left
+:toclevels: 4
+
+== 장바구니 추가
+
+=== /api/users/carts/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/cart-api-docs-test/add-cart/http-request.adoc[]
+include::{snippets}/cart-api-docs-test/add-cart/request-fields.adoc[]
+include::{snippets}/cart-api-docs-test/add-cart/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/cart-api-docs-test/add-cart/http-response.adoc[]
+include::{snippets}/cart-api-docs-test/add-cart/response-fields.adoc[]
+
+== 장바구니 조회
+
+=== /api/users/carts/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/cart-api-docs-test/read-cart-list/http-request.adoc[]
+include::{snippets}/cart-api-docs-test/read-cart-list/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/cart-api-docs-test/read-cart-list/http-response.adoc[]
+include::{snippets}/cart-api-docs-test/read-cart-list/response-fields.adoc[]
+
+== 장바구니 수정
+
+=== /api/users/carts/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/cart-api-docs-test/update-cart/http-request.adoc[]
+include::{snippets}/cart-api-docs-test/update-cart/request-fields.adoc[]
+include::{snippets}/cart-api-docs-test/update-cart/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/cart-api-docs-test/update-cart/http-response.adoc[]
+include::{snippets}/cart-api-docs-test/update-cart/response-fields.adoc[]
+
+== 장바구니 삭제
+
+=== /api/users/carts/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/cart-api-docs-test/delete-cart/http-request.adoc[]
+include::{snippets}/cart-api-docs-test/delete-cart/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/cart-api-docs-test/delete-cart/http-response.adoc[]
+include::{snippets}/cart-api-docs-test/delete-cart/response-fields.adoc[]
+

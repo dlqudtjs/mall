@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.3'
     id 'io.spring.dependency-management' version '1.1.3'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2' // (1)
 }
 
 group = 'com.capstone'
@@ -18,6 +19,7 @@ configurations {
 }
 
 ext {
+    set('snippetsDir', file("build/generated-snippets")) // (2)
     set('springCloudGcpVersion', "4.5.0")
     set('springCloudVersion', "2022.0.3")
 }
@@ -42,9 +44,13 @@ dependencies {
     // gcp
     implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
 
+    // jwt
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    // restdocs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // (6)
 }
 
 // storage bucket
@@ -57,4 +63,29 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir // (3)
+}
+
+tasks.named('asciidoctor') {
+    inputs.dir snippetsDir // (4)
+    dependsOn test // (5)
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file('build/docs/asciidoc')
+    into file('src/main/resources/static/docs')
+}
+
+bootJar {
+    dependsOn copyDocument
+
+    copy {
+        from "${asciidoctor.outputDir}"
+        into 'BOOT-INF/classes/static/docs'
+    }
 }

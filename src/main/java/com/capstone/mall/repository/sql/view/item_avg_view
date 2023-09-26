@@ -1,0 +1,9 @@
+CREATE VIEW item_avg_view AS
+SELECT item_id AS avg_item_id, AVG(rate) AS avg_rating
+FROM review
+GROUP BY avg_item_id;
+
+// 사용법
+SELECT avg_rating
+FROM item_avg_view
+WHERE avg_item_id = 5;

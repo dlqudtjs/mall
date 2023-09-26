@@ -1,0 +1,10 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Spring REST Docs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== link:cart/cart.html[장바구니 API]

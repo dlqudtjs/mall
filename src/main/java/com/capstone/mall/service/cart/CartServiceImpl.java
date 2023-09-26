@@ -4,6 +4,7 @@ import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.cart.Cart;
 import com.capstone.mall.model.cart.CartRequestDto;
 import com.capstone.mall.model.cart.CartResponseDto;
+import com.capstone.mall.model.cart.CartUpdateRequestDto;
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.repository.JpaCartRepository;
 import com.capstone.mall.repository.JpaItemRepository;
@@ -46,7 +47,6 @@ public class CartServiceImpl implements CartService {
         List<CartResponseDto> carts = new ArrayList<>();
 
         for (Cart cart : cartList) {
-            System.out.println(cart.getCartId());
             Item item = itemRepository.findById(cart.getItemId()).orElse(null);
 
             if (item == null) {
@@ -68,6 +68,23 @@ public class CartServiceImpl implements CartService {
 
         return responseService.createResponseDto(200, "", carts);
     }
+    
+    @Override
+    public ResponseDto updateCart(Long cartId, CartUpdateRequestDto cartUpdateRequestDto, String token) {
+        Cart cart = cartRepository.findById(cartId).orElse(null);
+
+        if (cart == null) {
+            return responseService.createResponseDto(200, "cart does not exist", null);
+        }
+
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.getUserId())) {
+            return responseService.createResponseDto(403, "token does not match", null);
+        }
+
+        cart.setQuantity(cartUpdateRequestDto.getQuantity());
+
+        return responseService.createResponseDto(200, "", cartId);
+    }
 
     @Override
     public ResponseDto deleteCart(Long cartId, String token) {
@@ -86,20 +103,4 @@ public class CartServiceImpl implements CartService {
         return responseService.createResponseDto(200, "", cartId);
     }
 
-    @Override
-    public ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto, String token) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-
-        if (cart == null) {
-            return responseService.createResponseDto(200, "cart does not exist", null);
-        }
-
-        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.getUserId())) {
-            return responseService.createResponseDto(403, "token does not match", null);
-        }
-
-        cart.setQuantity(cartRequestDto.getQuantity());
-
-        return responseService.createResponseDto(200, "", cartId);
-    }
 }

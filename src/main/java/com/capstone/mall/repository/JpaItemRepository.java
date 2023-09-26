@@ -11,20 +11,16 @@ import java.util.Optional;
 
 public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByCategoryId(Long categoryId);
+    String itemListByCategoryId = "SELECT * FROM item_list_by_category_view ";
 
-    @Query(value = "CALL GetItemsByCategoryId(:categoryId, :sortType)", nativeQuery = true)
-    Optional<List<ItemListProjectionInterface>> callGetItemsByCategoryId(Long categoryId, String sortType);
+
+    // 카테고리 정렬
+    @Query(value = itemListByCategoryId + "where categoryId = :categoryId", nativeQuery = true)
+    List<ItemListProjectionInterface> itemListByCategoryId(Long categoryId);
 
 
     @Query(value = "CALL SearchItemsByKeyword(:search, :sortType)", nativeQuery = true)
     List<ItemListProjectionInterface> callGetItemsBySearch(String search, String sortType);
-
-    @Query(value = "CALL CalculateAverageRating(:itemId)", nativeQuery = true)
-    Optional<Double> callCalculateAverageRating(Long itemId);
-
-    @Query(value = "CALL GetItemReviewCount(:itemId)", nativeQuery = true)
-    int callGetItemReviewCount(Long itemId);
 
     @Query(value = "CALL GetItemInfoByItemId(:itemId)", nativeQuery = true)
     Optional<ItemProjectionInterface> callGetItemInfoByItemId(Long itemId);

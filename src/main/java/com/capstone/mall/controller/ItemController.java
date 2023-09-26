@@ -34,11 +34,12 @@ public class ItemController {
 
     @GetMapping("/public/categories/{categoryId}/items")
     public ResponseEntity<ResponseDto> readItemListByCategory(@PathVariable Long categoryId,
-                                                              @RequestParam(required = false, defaultValue = "n") String sortType,
+                                                              @RequestParam(required = false, defaultValue = "createdAt") String sort,
+                                                              @RequestParam(required = false, defaultValue = "desc") String sortType,
                                                               @RequestParam(required = false, defaultValue = "1") int pageNum,
                                                               @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
-        ResponseDto responseDto = itemService.readItemList(categoryId, pageNum, pageSize, sortType);
+        ResponseDto responseDto = itemService.readItemList(categoryId, pageNum, pageSize, sort, sortType);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

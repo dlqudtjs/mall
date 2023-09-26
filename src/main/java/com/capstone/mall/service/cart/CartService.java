@@ -2,6 +2,7 @@ package com.capstone.mall.service.cart;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.cart.CartRequestDto;
+import com.capstone.mall.model.cart.CartUpdateRequestDto;
 
 public interface CartService {
 
@@ -11,5 +12,5 @@ public interface CartService {
 
     ResponseDto deleteCart(Long cartId, String token);
 
-    ResponseDto updateCart(Long cartId, CartRequestDto cartRequestDto, String token);
+    ResponseDto updateCart(Long cartId, CartUpdateRequestDto CartUpdateRequestDto, String token);
 }

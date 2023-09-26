@@ -132,6 +132,11 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean validateMetaId(String metaId, String checkId) throws Exception {
-        return decrypt(checkId).equals(metaId);
+        try {
+            return decrypt(checkId).equals(metaId);
+        } catch (Exception e) {
+            log.error("Decryption failed");
+            return false;
+        }
     }
 }

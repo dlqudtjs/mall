@@ -9,7 +9,7 @@ public interface ItemService {
     ResponseDto readItemList(String search, int pageNum, int pageSize, String sortType);
 
     // 카테고리로 아이템 리스트 조회
-    ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sortType);
+    ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType);
 
     // 판매중인 상품 목록 조회 (판매자 전용)
     ResponseDto readItemListBySellerId(String sellerId, int pageNum, int pageSize, String token);

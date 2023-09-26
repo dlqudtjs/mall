@@ -1,7 +1,6 @@
 package com.capstone.mall.model.item;
 
 import java.util.Date;
-import java.util.Optional;
 
 public interface ItemListProjectionInterface {
 
@@ -21,9 +20,9 @@ public interface ItemListProjectionInterface {
 
     int getStock();
 
-    Optional<Integer> getItemReviewCount();
+    Integer getReviewCount();
 
-    Optional<Double> getItemAvgReview();
+    Double getAvgRating();
 
-    int getSales();
+    Integer getSales();
 }

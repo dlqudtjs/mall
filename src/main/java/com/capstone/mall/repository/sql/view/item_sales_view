@@ -1,0 +1,9 @@
+CREATE VIEW item_sales_view AS
+SELECT item_id AS sales_item_id, SUM(quantity) AS sales
+FROM orderDetail
+GROUP BY sales_item_id;
+
+// 사용법
+SELECT sales
+FROM item_sales_view
+WHERE sales_item_id = 5;

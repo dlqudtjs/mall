@@ -1,0 +1,12 @@
+CREATE VIEW item_count_view AS
+SELECT item_id AS review_item_id, COUNT(item_id) AS review_count
+FROM review
+GROUP BY review_item_id;
+
+
+// 사용법
+ex)
+SELECT review_count
+FROM item_count_view
+WHERE review_item_id = 5;
+
