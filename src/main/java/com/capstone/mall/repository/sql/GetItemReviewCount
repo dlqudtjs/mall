@@ -1,6 +1,0 @@
-CREATE DEFINER=`root`@`%` PROCEDURE `GetItemReviewCount`(IN p_item_id INT, OUT p_review_count INT)
-BEGIN
-    SELECT COUNT(*) INTO p_review_count
-    FROM review
-    WHERE item_id = p_item_id;
-END

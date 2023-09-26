@@ -1,5 +1,7 @@
 package com.capstone.mall.model.item;
 
+import java.util.Date;
+
 public interface ItemProjectionInterface {
 
     Long getItemId();
@@ -18,11 +20,17 @@ public interface ItemProjectionInterface {
 
     String getContent();
 
-    Integer getPrice();
+    Date getCreatedAt();
 
-    Double getItemAvgReview();
+    Date getUpdatedAt();
 
-    Integer getItemReviewCount();
+    int getPrice();
 
     int getStock();
+
+    Integer getReviewCount();
+
+    Double getAvgRating();
+
+    Integer getSales();
 }

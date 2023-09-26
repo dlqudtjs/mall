@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 // 아이템 리스트 조회 시 응답으로 보내는 DTO
-public class ItemListResponseDto {
-    List<ItemListProjection> items;
+public class ItemProjectionListResponseDto {
+    List<ItemProjection> items;
 
     int totalPage;
 }

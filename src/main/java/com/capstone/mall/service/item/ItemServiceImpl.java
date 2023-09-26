@@ -31,11 +31,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ResponseDto readItem(Long itemId) {
-        ItemProjectionInterface item = itemRepository.callGetItemInfoByItemId(itemId).orElse(null);
-
-        if (item == null) {
-            return responseService.createResponseDto(200, "존재하지 않는 상품입니다.", null);
+        if (!itemRepository.existsById(itemId)) {
+            return responseService.createResponseDto(200, "", null);
         }
+
+        ItemProjectionInterface item = itemRepository.itemDetailByItemId(itemId);
 
         ItemResponseDto itemResponseDto = ItemResponseDto.builder()
                 .itemId(item.getItemId())
@@ -47,33 +47,21 @@ public class ItemServiceImpl implements ItemService {
                 .image3(item.getImage3())
                 .content(item.getContent())
                 .price(item.getPrice())
-                .rate(item.getItemAvgReview())
-                .reviewCount(item.getItemReviewCount())
+                .rate(item.getAvgRating())
+                .reviewCount(item.getReviewCount())
                 .stock(item.getStock())
                 .build();
 
         return responseService.createResponseDto(200, "", itemResponseDto);
     }
 
-    /*
-     * 아이템 리스트를 정렬하는 메소드
-     * n: 최신순,
-     * r: 별점순,
-     * lp: 낮은 가격순,
-     * hp: 높은 가격,
-     * s: 판매량 순
-     */
     @Override
     // 검색으로 아이템 리스트 조회
     public ResponseDto readItemList(String search, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemListProjectionInterface> items = itemRepository.itemListByKeyword(search);
-
-        if (items == null) {
-            return responseService.createResponseDto(200, "", null);
-        }
+        List<ItemProjectionInterface> items = itemRepository.itemListByKeyword(search);
 
         // Interface 매핑
-        List<ItemListProjection> itemList = getItems(items);
+        List<ItemProjection> itemList = getItems(items);
 
         // 총 페이지 수
         int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
@@ -84,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
         // 페이지네이션
         itemList = pagination(itemList, pageNum, pageSize);
 
-        ItemListResponseDto itemResponseDto = ItemListResponseDto.builder()
+        ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
                 .totalPage(totalPage)
                 .build();
@@ -96,10 +84,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 카테고리로 아이템 리스트 조회
     public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemListProjectionInterface> items = itemRepository.itemListByCategoryId(categoryId);
+        List<ItemProjectionInterface> items = itemRepository.itemListByCategoryId(categoryId);
 
         // Interface 매핑
-        List<ItemListProjection> itemList = getItems(items);
+        List<ItemProjection> itemList = getItems(items);
 
         // 총 페이지 수
         int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
@@ -110,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
         // 페이지네이션
         itemList = pagination(itemList, pageNum, pageSize);
 
-        ItemListResponseDto itemResponseDto = ItemListResponseDto.builder()
+        ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
                 .totalPage(totalPage)
                 .build();
@@ -124,13 +112,9 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        List<ItemListProjectionInterface> items = itemRepository.callGetItemsBySellerId(sellerId).orElse(null);
+        List<ItemProjectionInterface> items = itemRepository.callGetItemsBySellerId(sellerId);
 
-        if (items == null) {
-            return responseService.createResponseDto(200, "", null);
-        }
-
-        List<ItemListProjection> itemList = getItems(items);
+        List<ItemProjection> itemList = getItems(items);
 
         // 총 페이지 수
         int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
@@ -138,7 +122,7 @@ public class ItemServiceImpl implements ItemService {
         // 페이지네이션
         itemList = pagination(itemList, pageNum, pageSize);
 
-        ItemListResponseDto itemResponseDto = ItemListResponseDto.builder()
+        ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
                 .totalPage(totalPage)
                 .build();
@@ -209,13 +193,13 @@ public class ItemServiceImpl implements ItemService {
         return responseService.createResponseDto(200, "", itemId);
     }
 
-    private List<ItemListProjection> listSort(List<ItemListProjection> itemList, String sort, String sortType) {
+    private List<ItemProjection> listSort(List<ItemProjection> itemList, String sort, String sortType) {
         switch (sort) {
             case "createdAt" -> {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
                 } else {
-                    itemList.sort(Comparator.comparing(ItemListProjection::getCreatedAt));
+                    itemList.sort(Comparator.comparing(ItemProjection::getCreatedAt));
                 }
             }
             case "avgRating" -> {
@@ -229,21 +213,21 @@ public class ItemServiceImpl implements ItemService {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> o2.getPrice() - o1.getPrice());
                 } else {
-                    itemList.sort(Comparator.comparingInt(ItemListProjection::getPrice));
+                    itemList.sort(Comparator.comparingInt(ItemProjection::getPrice));
                 }
             }
             case "sales" -> {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> o2.getSales() - o1.getSales());
                 } else {
-                    itemList.sort(Comparator.comparingInt(ItemListProjection::getSales));
+                    itemList.sort(Comparator.comparingInt(ItemProjection::getSales));
                 }
             }
             case "stock" -> {
                 if (sortType.equals("desc")) {
                     itemList.sort((o1, o2) -> o2.getReviewCount() - o1.getReviewCount());
                 } else {
-                    itemList.sort(Comparator.comparingInt(ItemListProjection::getReviewCount));
+                    itemList.sort(Comparator.comparingInt(ItemProjection::getReviewCount));
                 }
             }
         }
@@ -251,11 +235,11 @@ public class ItemServiceImpl implements ItemService {
         return itemList;
     }
 
-    private List<ItemListProjection> getItems(List<ItemListProjectionInterface> items) {
-        List<ItemListProjection> itemList = new ArrayList<>();
+    private List<ItemProjection> getItems(List<ItemProjectionInterface> items) {
+        List<ItemProjection> itemList = new ArrayList<>();
 
-        for (ItemListProjectionInterface item : items) {
-            itemList.add(ItemListProjection.builder()
+        for (ItemProjectionInterface item : items) {
+            itemList.add(ItemProjection.builder()
                     .itemId(item.getItemId())
                     .name(item.getName())
                     .image1(item.getImage1())
@@ -299,7 +283,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private List<ItemListProjection> pagination(List<ItemListProjection> itemList, int pageNum, int pageSize) {
+    private List<ItemProjection> pagination(List<ItemProjection> itemList, int pageNum, int pageSize) {
         pageNum = Math.max(pageNum, 1);
         int endIdx = Math.min(pageNum * pageSize, itemList.size());
 

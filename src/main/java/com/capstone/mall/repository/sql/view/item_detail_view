@@ -1,0 +1,39 @@
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`%`
+    SQL SECURITY DEFINER
+VIEW `mall`.`item_detail_view` AS
+    SELECT
+        `mall`.`item`.`item_id` AS `itemId`,
+        `mall`.`item`.`seller_id` AS `sellerId`,
+        `mall`.`item`.`name` AS `name`,
+        `mall`.`item`.`category_id` AS `categoryId`,
+        `mall`.`item`.`image_1` AS `image1`,
+        `mall`.`item`.`content` AS `content`,
+        `mall`.`item`.`created_at` AS `createdAt`,
+        `mall`.`item`.`updated_at` AS `updatedAt`,
+        `mall`.`item`.`price` AS `price`,
+        `mall`.`item`.`stock` AS `stock`,
+        IFNULL((SELECT
+                        `item_count_view`.`review_count`
+                    FROM
+                        `mall`.`item_count_view`
+                    WHERE
+                        `item_count_view`.`review_item_id` = `mall`.`item`.`item_id`),
+                0) AS `reviewCount`,
+        IFNULL((SELECT
+                        `item_avg_view`.`avg_rating`
+                    FROM
+                        `mall`.`item_avg_view`
+                    WHERE
+                        `item_avg_view`.`avg_item_id` = `mall`.`item`.`item_id`),
+                0) AS `avgRating`,
+        IFNULL((SELECT
+                        `item_sales_view`.`sales`
+                    FROM
+                        `mall`.`item_sales_view`
+                    WHERE
+                        `item_sales_view`.`sales_item_id` = `mall`.`item`.`item_id`),
+                0) AS `sales`
+    FROM
+        `mall`.`item`

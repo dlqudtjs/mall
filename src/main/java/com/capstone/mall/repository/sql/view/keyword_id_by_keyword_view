@@ -1,0 +1,10 @@
+CREATE
+    ALGORITHM = UNDEFINED
+    DEFINER = `root`@`%`
+    SQL SECURITY DEFINER
+VIEW `mall`.`keyword_id_by_keyword_view` AS
+    SELECT
+        `mall`.`keyword`.`keyword` AS `keyword`,
+        `mall`.`keyword`.`keyword_id` AS `keyword_id`
+    FROM
+        `mall`.`keyword`
