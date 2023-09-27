@@ -9,8 +9,10 @@ import com.capstone.mall.repository.JpaOrderDetailRepository;
 import com.capstone.mall.repository.JpaOrderRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
-import com.capstone.mall.service.util.Paginator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailId);
 
         if (orderDetail.isEmpty()) {
-            return responseService.createResponseDto(200, "orderDetail does not exist", null);
+            return responseService.createResponseDto(200, "order does not exist", null);
         }
 
         if (!orderDetail.get().getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
@@ -74,26 +76,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseDto getSoldOrderList(String userId, int pageNum, int pageSize, String token) {
-        List<OrderDetail> orderDetails = orderDetailRepository.findBySellerId(userId);
-
-        if (orderDetails.isEmpty()) {
-            return responseService.createResponseDto(200, "order does not exist", null);
-        }
-
+        // 조회하는 유저와 토큰의 유저가 일치하는지 확인
         if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil((double) orderDetails.size() / pageSize);
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
 
-        // 페이지네이션
-        Paginator<OrderDetail> paginator = new Paginator<>();
-        orderDetails = paginator.paginate(orderDetails, pageNum, pageSize);
+        Page<OrderDetail> orderDetails = orderDetailRepository.findAllBySellerId(userId, pageable);
 
         List<OrderDetailResponseDto> orderDetailResponseDtoList = new ArrayList<>();
 
-        for (OrderDetail orderDetail : orderDetails) {
+        for (OrderDetail orderDetail : orderDetails.getContent()) {
             Optional<Item> item = itemRepository.findById(orderDetail.getItemId());
 
             OrderDetailResponseDto orderDetailResponseDto = OrderDetailResponseDto.builder()
@@ -114,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDetailListResponseDto orderListResponseDto = OrderDetailListResponseDto.builder()
                 .orders(orderDetailResponseDtoList)
-                .totalPage(totalPage)
+                .totalPage(orderDetails.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", orderListResponseDto);
@@ -122,29 +118,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseDto getPurchaseList(String userId, int pageNum, int pageSize, String token) {
+        // 조회하는 유저와 토큰의 유저가 일치하는지 확인
         if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+
         // order 를 담기 위해 userId 로 조회한다. (orderId 로 orderDetail 을 조회하기 위함)
-        List<Order> orderList = orderRepository.findByUserId(userId);
+        Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
 
         // order 를 담기 위한 List
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil((double) orderList.size() / pageSize);
-
-        // 페이지네이션
-        Paginator<Order> paginator = new Paginator<>();
-        orderList = paginator.paginate(orderList, pageNum, pageSize);
-
-        for (Order order : orderList) {
+        for (Order order : orderList.getContent()) {
             // orderDetail 을 담기 위한 List
             List<OrderDetailResponseDto> orderDetails = new ArrayList<>();
 
             // orderDetail 을 담기 위해 orderId 로 조회한다.
-            List<OrderDetail> orderDetailList = orderDetailRepository.findByOrderId(order.getOrderId());
+            List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(order.getOrderId());
 
             for (OrderDetail orderDetail : orderDetailList) {
                 Optional<Item> item = itemRepository.findById(orderDetail.getItemId());
@@ -178,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderListResponseDto orders = OrderListResponseDto.builder()
                 .orders(orderResponseDtoList)
-                .totalPage(totalPage)
+                .totalPage(orderList.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", orders);
