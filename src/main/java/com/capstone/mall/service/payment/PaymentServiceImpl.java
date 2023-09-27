@@ -31,13 +31,37 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseDto payment(String userId, String items, PaymentRequestDto paymentRequestDto) {
         Map<Long, Integer> itemMap = getItemMap(items);
 
+        // 재고 확인
+        for (Long itemId : itemMap.keySet()) {
+            Optional<Item> item = itemRepository.findById(itemId);
+
+            if (item.isEmpty()) {
+                return responseService.createResponseDto(200, "삭제된 상품이 존재합니다.", null);
+            }
+
+            if (item.get().getStock() < itemMap.get(itemId)) {
+                return responseService.createResponseDto(200, "재고가 부족합니다.", null);
+            }
+        }
+
         // 주문 생성
         Order order = createOrder(userId, paymentRequestDto, itemMap);
 
         // 주문 상세 생성
         createOrderDetail(order, itemMap);
 
+        // 재고 업데이트
+        stockUpdate(itemMap);
+
         return responseService.createResponseDto(200, "", order.getOrderId());
+    }
+
+    private void stockUpdate(Map<Long, Integer> itemMap) {
+        for (Long itemId : itemMap.keySet()) {
+            Optional<Item> item = itemRepository.findById(itemId);
+
+            item.ifPresent(value -> value.setStock(value.getStock() - itemMap.get(itemId)));
+        }
     }
 
     private void createOrderDetail(Order order, Map<Long, Integer> itemMap) {
