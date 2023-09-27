@@ -8,6 +8,10 @@ import com.capstone.mall.repository.JpaReviewRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,61 +29,35 @@ public class ReviewServiceImpl implements ReviewService {
     private final JpaItemRepository itemRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    /*
-     * sortType:
-     * n: newest,
-     * lr: low rate,
-     * hr: high rate
-     */
     @Override
-    public ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sortType) {
-        List<Review> reviews;
+    public ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sort, String sortType) {
+        Sort pageSort = getSort(sort, sortType);
 
-        if (sortType.equals("n")) {
-            reviews = reviewRepository.findAllByItemIdOrderByCreatedAtDesc(itemId);
-        } else if (sortType.equals("lr")) {
-            reviews = reviewRepository.findAllByItemIdOrderByRate(itemId);
-        } else if (sortType.equals("hr")) {
-            reviews = reviewRepository.findAllByItemIdOrderByRateDesc(itemId);
-        } else {
-            reviews = reviewRepository.findAllByItemIdOrderByCreatedAtDesc(itemId);
-        }
-
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil(reviews.size() / (double) pageSize);
-
-        // 페이지네이션
-        reviews = pagination(reviews, pageNum, pageSize);
+        Pageable pageable = getPageable(pageNum, pageSize, pageSort);
+        Page<Review> reviews = reviewRepository.findAllByItemId(itemId, pageable);
 
         ReviewListResponseDto reviewListResponseDto = ReviewListResponseDto.builder()
-                .reviews(reviews)
-                .totalPage(totalPage)
+                .reviews(reviews.getContent())
+                .totalPage(reviews.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", reviewListResponseDto);
     }
 
+
+    // 유저가 작성한 리뷰 조회
     @Override
     public ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize, String token) {
-        List<Review> reviews = reviewRepository.findAllByUserId(userId);
-
-        if (reviews == null) {
-            return responseService.createResponseDto(200, "", null);
-        }
-
+        // 토큰의 userId와 요청의 userId가 일치하지 않을 경우
         if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil(reviews.size() / (double) pageSize);
-
-        // 페이지네이션
-        reviews = pagination(reviews, pageNum, pageSize);
+        Pageable pageable = getPageable(pageNum, pageSize);
+        Page<Review> reviews = reviewRepository.findAllByUserId(userId, pageable);
 
         List<ReviewListByUserId> reviewListByUserId = new ArrayList<>();
-
-        for (Review review : reviews) {
+        for (Review review : reviews.getContent()) {
             Optional<Item> item = itemRepository.findById(review.getItemId());
             reviewListByUserId.add(ReviewListByUserId.builder()
                     .reviewId(review.getReviewId())
@@ -97,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         ReviewListByUserIdResponseDto reviewListByUserIdResponseDto = ReviewListByUserIdResponseDto.builder()
                 .reviews(reviewListByUserId)
-                .totalPage(totalPage)
+                .totalPage(reviews.getTotalPages())
                 .build();
 
 
@@ -157,6 +135,33 @@ public class ReviewServiceImpl implements ReviewService {
         return responseService.createResponseDto(200, "", reviewId);
     }
 
+    private Pageable getPageable(int pageNum, int pageSize) {
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+
+        return PageRequest.of(pageNum, pageSize);
+    }
+
+    private Pageable getPageable(int pageNum, int pageSize, Sort pageSort) {
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+
+        return PageRequest.of(pageNum, pageSize, pageSort);
+    }
+
+    private Sort getSort(String sort, String sortType) {
+        // 정렬 기준이 rate, createdAt이 아닐 경우 default 로 createdAt 으로 정렬
+        if (!sort.equals("rate") && !sort.equals("createdAt")) {
+            sort = "createdAt";
+        }
+
+        if (sortType.equals("asc")) {
+            return Sort.by(sort).descending();
+        }
+
+        return Sort.by(sort).ascending();
+    }
+
     private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {
         pageNum = Math.max(pageNum, 1);
         int endIdx = Math.min(pageNum * pageSize, reviewList.size());
@@ -165,5 +170,4 @@ public class ReviewServiceImpl implements ReviewService {
 
         return reviewList;
     }
-
 }

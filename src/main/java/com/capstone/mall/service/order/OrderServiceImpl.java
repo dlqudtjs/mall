@@ -33,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     public ResponseDto createOrderForm(String userId, String items) {
         Map<Long, Integer> itemMap = new HashMap<>();
         String[] itemArray = items.split(",");
+
         for (String item : itemArray) {
             String[] itemInfo = item.split(":");
             itemMap.put(Long.parseLong(itemInfo[0]), Integer.parseInt(itemInfo[1]));
@@ -81,9 +82,7 @@ public class OrderServiceImpl implements OrderService {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        pageNum = Math.max(pageNum, 0);
-        pageSize = Math.max(pageSize, 1);
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Pageable pageable = getPageable(pageNum, pageSize);
 
         Page<OrderDetail> orderDetails = orderDetailRepository.findAllBySellerId(userId, pageable);
 
@@ -123,9 +122,7 @@ public class OrderServiceImpl implements OrderService {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        pageNum = Math.max(pageNum, 0);
-        pageSize = Math.max(pageSize, 1);
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Pageable pageable = getPageable(pageNum, pageSize);
 
         // order 를 담기 위해 userId 로 조회한다. (orderId 로 orderDetail 을 조회하기 위함)
         Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
@@ -176,5 +173,12 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         return responseService.createResponseDto(200, "", orders);
+    }
+
+    private Pageable getPageable(int pageNum, int pageSize) {
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+
+        return PageRequest.of(pageNum, pageSize);
     }
 }

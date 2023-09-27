@@ -5,7 +5,7 @@ import com.capstone.mall.model.review.ReviewRequestDto;
 
 public interface ReviewService {
 
-    ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sortType);
+    ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sort, String sortType);
 
     ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto);
 
