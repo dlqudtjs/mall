@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,33 +43,33 @@ public class UserServiceImpl implements UserService {
             return responseService.createResponseDto(401, "Invalid User Id", null);
         }
 
-        User user = userRepository.findByMetaIdNative(metaId).orElse(null);
+        Optional<User> user = userRepository.findByMetaIdNative(metaId);
 
         // 이미 존재하는 MetaId 인지 확인 후 없으면 생성
-        if (user == null) {
-            user = User.builder()
+        if (user.isEmpty()) {
+            user = Optional.of(User.builder()
                     .metaId(metaId)
                     .userId(getNanoId())
                     .role("ROLE_USER")
-                    .build();
+                    .build());
 
-            userRepository.save(user);
+            userRepository.save(user.get());
         }
 
         // DB 반영
         userRepository.flush();
 
         TokenResponse tokenResponse = TokenResponse.builder()
-                .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
-                .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
-                .userId(user.getUserId())
+                .accessToken(tokenProvider.createAccessToken(user.get().getUserId(), user.get().getRole()))
+                .refreshToken(tokenProvider.createRefreshToken(user.get().getUserId(), user.get().getRole()))
+                .userId(user.get().getUserId())
                 .build();
 
         return responseService.createResponseDto(200, "", tokenResponse);
     }
 
     @Override
-    public ResponseDto refresh(String refreshToken, HttpServletRequest request) {
+    public ResponseDto refresh(HttpServletRequest request) {
         String token = tokenProvider.resolveToken(request);
 
         if (!tokenProvider.validateToken(token)) {
@@ -77,16 +78,16 @@ public class UserServiceImpl implements UserService {
 
         String userId = tokenProvider.getUserId(token);
 
-        User user = userRepository.findByUserId(userId).orElse(null);
+        Optional<User> user = userRepository.findByUserId(userId);
 
-        if (user == null) {
-            return responseService.createResponseDto(401, "ID does not exist during token reissuance process", null);
+        if (user.isEmpty()) {
+            return responseService.createResponseDto(401, "user does not exist during token reissuance process", null);
         }
 
         TokenResponse tokenResponse = TokenResponse.builder()
-                .accessToken(tokenProvider.createAccessToken(user.getUserId(), user.getRole()))
-                .refreshToken(tokenProvider.createRefreshToken(user.getUserId(), user.getRole()))
-                .userId(user.getUserId())
+                .accessToken(tokenProvider.createAccessToken(user.get().getUserId(), user.get().getRole()))
+                .refreshToken(tokenProvider.createRefreshToken(user.get().getUserId(), user.get().getRole()))
+                .userId(user.get().getUserId())
                 .build();
 
         return responseService.createResponseDto(200, "", tokenResponse);
@@ -94,26 +95,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDto update(String userId, UserRequestDto userRequestDto) {
-        User user = userRepository.findByUserId(userId).orElse(null);
+        Optional<User> user = userRepository.findByUserId(userId);
 
-        if (user == null) {
-            return responseService.createResponseDto(400, "ID does not exist", null);
+        if (user.isEmpty()) {
+            return responseService.createResponseDto(400, "user does not exist", null);
         }
 
+        // Role 유효성 검사
         if (!checkRole(userRequestDto.getRole())) {
             return responseService.createResponseDto(200, "Invalid Role", null);
         }
 
-        user.setRole(userRequestDto.getRole());
+        user.get().setRole(userRequestDto.getRole());
 
-        return responseService.createResponseDto(200, "", user.getUserId());
+        return responseService.createResponseDto(200, "", userId);
     }
 
     @Override
     public ResponseDto readAllUserList() {
         List<User> userList = userRepository.findAll();
-        List<UserResponseDto> users = new ArrayList<>();
 
+        List<UserResponseDto> users = new ArrayList<>();
         for (User user : userList) {
             users.add(UserResponseDto.builder()
                     .userId(user.getUserId())
@@ -126,11 +128,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean checkRole(String role) {
-        if (role.equals("ROLE_USER") || role.equals("ROLE_ADMIN") || role.equals("ROLE_SELLER")) {
-            return true;
-        }
-
-        return false;
+        return role.equals("ROLE_USER") || role.equals("ROLE_ADMIN") || role.equals("ROLE_SELLER");
     }
 
 

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,22 +46,21 @@ public class CartServiceImpl implements CartService {
         List<Cart> cartList = cartRepository.findByUserId(userId);
 
         List<CartResponseDto> carts = new ArrayList<>();
-
         for (Cart cart : cartList) {
-            Item item = itemRepository.findById(cart.getItemId()).orElse(null);
+            Optional<Item> item = itemRepository.findById(cart.getItemId());
 
-            if (item == null) {
-                return responseService.createResponseDto(200, "deleted items in cart ", null);
+            if (item.isEmpty()) {
+                continue;
             }
 
             CartResponseDto cartResponseDto = CartResponseDto.builder()
                     .cartId(cart.getCartId())
                     .itemId(cart.getItemId())
-                    .name(item.getName())
+                    .name(item.get().getName())
                     .quantity(cart.getQuantity())
-                    .price(item.getPrice())
-                    .image1(item.getImage1())
-                    .stock(item.getStock())
+                    .price(item.get().getPrice())
+                    .image1(item.get().getImage1())
+                    .stock(item.get().getStock())
                     .build();
 
             carts.add(cartResponseDto);
@@ -68,33 +68,33 @@ public class CartServiceImpl implements CartService {
 
         return responseService.createResponseDto(200, "", carts);
     }
-    
+
     @Override
     public ResponseDto updateCart(Long cartId, CartUpdateRequestDto cartUpdateRequestDto, String token) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
+        Optional<Cart> cart = cartRepository.findById(cartId);
 
-        if (cart == null) {
+        if (cart.isEmpty()) {
             return responseService.createResponseDto(200, "cart does not exist", null);
         }
 
-        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.getUserId())) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.get().getUserId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        cart.setQuantity(cartUpdateRequestDto.getQuantity());
+        cart.get().setQuantity(cartUpdateRequestDto.getQuantity());
 
         return responseService.createResponseDto(200, "", cartId);
     }
 
     @Override
     public ResponseDto deleteCart(Long cartId, String token) {
-        Cart cart = cartRepository.findById(cartId).orElse(null);
+        Optional<Cart> cart = cartRepository.findById(cartId);
 
-        if (cart == null) {
+        if (cart.isEmpty()) {
             return responseService.createResponseDto(200, "cart does not exist", null);
         }
 
-        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.getUserId())) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(cart.get().getUserId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -102,5 +102,4 @@ public class CartServiceImpl implements CartService {
 
         return responseService.createResponseDto(200, "", cartId);
     }
-
 }

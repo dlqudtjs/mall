@@ -1,4 +1,4 @@
-package com.capstone.mall.model.order;
+package com.capstone.mall.model.order.orderDetail;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
+// order 안에 같이 조회되는 orderDetail 응답 DTO
 public class OrderDetailResponseDto {
 
     private Long orderDetailId;

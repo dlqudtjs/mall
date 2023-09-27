@@ -8,7 +8,7 @@ public interface UserService {
 
     ResponseDto login(String userId, UserRequestDto userRequestDto) throws Exception;
 
-    ResponseDto refresh(String refreshToken, HttpServletRequest request);
+    ResponseDto refresh(HttpServletRequest request);
 
     ResponseDto update(String userId, UserRequestDto userRequestDto);
 

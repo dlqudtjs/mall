@@ -1,4 +1,4 @@
-package com.capstone.mall.model.order;
+package com.capstone.mall.model.order.orderDetail;
 
 import lombok.Builder;
 import lombok.Getter;

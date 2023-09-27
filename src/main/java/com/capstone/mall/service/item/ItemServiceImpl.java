@@ -159,7 +159,7 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(200, "item does not exist", null);
         }
 
-        if (!item.getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.getSellerId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -184,7 +184,7 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(200, "item does not exist", null);
         }
 
-        if (!item.getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.getSellerId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 

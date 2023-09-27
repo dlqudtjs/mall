@@ -2,7 +2,13 @@ package com.capstone.mall.service.order;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.item.Item;
-import com.capstone.mall.model.order.*;
+import com.capstone.mall.model.order.Order;
+import com.capstone.mall.model.order.OrderListResponseDto;
+import com.capstone.mall.model.order.OrderResponseDto;
+import com.capstone.mall.model.order.OrderUpdateRequestDto;
+import com.capstone.mall.model.order.orderDetail.OrderDetail;
+import com.capstone.mall.model.order.orderDetail.OrderDetailListResponseDto;
+import com.capstone.mall.model.order.orderDetail.OrderDetailResponseDto;
 import com.capstone.mall.model.order.orderForm.OrderFormDetail;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaOrderDetailRepository;
@@ -40,16 +46,19 @@ public class OrderServiceImpl implements OrderService {
         }
 
         List<OrderFormDetail> orderFormDetails = new ArrayList<>();
-
         for (Long itemId : itemMap.keySet()) {
             Optional<Item> item = itemRepository.findById(itemId);
 
+            if (item.isEmpty()) {
+                continue;
+            }
+
             OrderFormDetail orderFormDetail = OrderFormDetail.builder()
                     .itemId(itemId)
-                    .itemName(item.isEmpty() ? "존재하지 않는 상품" : item.get().getName())
-                    .image(item.isEmpty() ? "" : item.get().getImage1())
+                    .itemName(item.get().getName())
+                    .image(item.get().getImage1())
                     .quantity(itemMap.get(itemId))
-                    .price(item.isEmpty() ? 0 : item.get().getPrice())
+                    .price(item.get().getPrice())
                     .build();
 
             orderFormDetails.add(orderFormDetail);
@@ -59,45 +68,47 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseDto updateOrder(Long orderDetailId, OrderRequestDto orderRequestDto, String token) {
+    public ResponseDto updateOrder(Long orderDetailId, OrderUpdateRequestDto orderUpdateRequestDto, String token) {
         Optional<OrderDetail> orderDetail = orderDetailRepository.findById(orderDetailId);
 
         if (orderDetail.isEmpty()) {
             return responseService.createResponseDto(200, "order does not exist", null);
         }
 
-        if (!orderDetail.get().getSellerId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(orderDetail.get().getSellerId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        orderDetail.get().setResult(orderRequestDto.getResult());
+        orderDetail.get().setResult(orderUpdateRequestDto.getResult());
 
-        return responseService.createResponseDto(200, "", orderDetail.get().getOrderId());
+        return responseService.createResponseDto(200, "", orderDetailId);
     }
 
     @Override
     public ResponseDto getSoldOrderList(String userId, int pageNum, int pageSize, String token) {
         // 조회하는 유저와 토큰의 유저가 일치하는지 확인
-        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(userId)) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
         Pageable pageable = getPageable(pageNum, pageSize);
-
         Page<OrderDetail> orderDetails = orderDetailRepository.findAllBySellerId(userId, pageable);
 
         List<OrderDetailResponseDto> orderDetailResponseDtoList = new ArrayList<>();
-
         for (OrderDetail orderDetail : orderDetails.getContent()) {
             Optional<Item> item = itemRepository.findById(orderDetail.getItemId());
+
+            if (item.isEmpty()) {
+                continue;
+            }
 
             OrderDetailResponseDto orderDetailResponseDto = OrderDetailResponseDto.builder()
                     .orderDetailId(orderDetail.getOrderDetailId())
                     .orderId(orderDetail.getOrderId())
                     .itemId(orderDetail.getItemId())
-                    .itemName(item.isEmpty() ? "삭제된 상품" : item.get().getName())
+                    .itemName(item.get().getName())
                     .sellerId(orderDetail.getSellerId())
-                    .image(item.isEmpty() ? "" : item.get().getImage1())
+                    .image(item.get().getImage1())
                     .price(orderDetail.getPrice())
                     .quantity(orderDetail.getQuantity())
                     .result(orderDetail.getResult())
@@ -118,35 +129,36 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResponseDto getPurchaseList(String userId, int pageNum, int pageSize, String token) {
         // 조회하는 유저와 토큰의 유저가 일치하는지 확인
-        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(userId)) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
         Pageable pageable = getPageable(pageNum, pageSize);
-
         // order 를 담기 위해 userId 로 조회한다. (orderId 로 orderDetail 을 조회하기 위함)
         Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
 
         // order 를 담기 위한 List
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
-
         for (Order order : orderList.getContent()) {
-            // orderDetail 을 담기 위한 List
-            List<OrderDetailResponseDto> orderDetails = new ArrayList<>();
-
             // orderDetail 을 담기 위해 orderId 로 조회한다.
             List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(order.getOrderId());
 
+            // orderDetail 을 담기 위한 List
+            List<OrderDetailResponseDto> orderDetails = new ArrayList<>();
             for (OrderDetail orderDetail : orderDetailList) {
                 Optional<Item> item = itemRepository.findById(orderDetail.getItemId());
+
+                if (item.isEmpty()) {
+                    continue;
+                }
 
                 OrderDetailResponseDto orderDetailResponseDto = OrderDetailResponseDto.builder()
                         .orderDetailId(orderDetail.getOrderDetailId())
                         .orderId(orderDetail.getOrderId())
                         .itemId(orderDetail.getItemId())
-                        .itemName(item.isEmpty() ? "삭제된 상품" : item.get().getName())
+                        .itemName(item.get().getName())
                         .sellerId(orderDetail.getSellerId())
-                        .image(item.isEmpty() ? "" : item.get().getImage1())
+                        .image(item.get().getImage1())
                         .price(orderDetail.getPrice())
                         .quantity(orderDetail.getQuantity())
                         .result(orderDetail.getResult())

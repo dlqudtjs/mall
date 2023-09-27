@@ -1,6 +1,6 @@
 package com.capstone.mall.repository;
 
-import com.capstone.mall.model.order.OrderDetail;
+import com.capstone.mall.model.order.orderDetail.OrderDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

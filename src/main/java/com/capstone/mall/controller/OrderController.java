@@ -1,7 +1,7 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.order.OrderRequestDto;
+import com.capstone.mall.model.order.OrderUpdateRequestDto;
 import com.capstone.mall.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +26,9 @@ public class OrderController {
     // 주문 상태 업데이트
     @PatchMapping("/sellers/orders/{orderDetailId}")
     public ResponseEntity<ResponseDto> updateOrder(@PathVariable Long orderDetailId,
-                                                   @RequestBody OrderRequestDto orderRequestDto,
+                                                   @RequestBody OrderUpdateRequestDto orderUpdateRequestDto,
                                                    @RequestHeader("Authorization") String token) {
-        ResponseDto responseDto = orderService.updateOrder(orderDetailId, orderRequestDto, token);
+        ResponseDto responseDto = orderService.updateOrder(orderDetailId, orderUpdateRequestDto, token);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

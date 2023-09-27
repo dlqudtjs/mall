@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping("/users/refresh")
-    public ResponseEntity<ResponseDto> refresh(@RequestHeader("Authorization") String refreshToken, HttpServletRequest request) {
-        ResponseDto responseDto = userService.refresh(refreshToken, request);
+    public ResponseEntity<ResponseDto> refresh(HttpServletRequest request) {
+        ResponseDto responseDto = userService.refresh(request);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

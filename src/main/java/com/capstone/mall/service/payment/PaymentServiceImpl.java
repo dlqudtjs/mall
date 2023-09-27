@@ -3,7 +3,7 @@ package com.capstone.mall.service.payment;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.model.order.Order;
-import com.capstone.mall.model.order.OrderDetail;
+import com.capstone.mall.model.order.orderDetail.OrderDetail;
 import com.capstone.mall.model.payment.PaymentRequestDto;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaOrderDetailRepository;
@@ -42,6 +42,8 @@ public class PaymentServiceImpl implements PaymentService {
             if (item.get().getStock() < itemMap.get(itemId)) {
                 return responseService.createResponseDto(200, "재고가 부족합니다.", null);
             }
+
+            item.get().setStock(item.get().getStock() - itemMap.get(itemId));
         }
 
         // 주문 생성
@@ -50,28 +52,22 @@ public class PaymentServiceImpl implements PaymentService {
         // 주문 상세 생성
         createOrderDetail(order, itemMap);
 
-        // 재고 업데이트
-        stockUpdate(itemMap);
-
         return responseService.createResponseDto(200, "", order.getOrderId());
-    }
-
-    private void stockUpdate(Map<Long, Integer> itemMap) {
-        for (Long itemId : itemMap.keySet()) {
-            Optional<Item> item = itemRepository.findById(itemId);
-
-            item.ifPresent(value -> value.setStock(value.getStock() - itemMap.get(itemId)));
-        }
     }
 
     private void createOrderDetail(Order order, Map<Long, Integer> itemMap) {
         for (Long itemId : itemMap.keySet()) {
             Optional<Item> item = itemRepository.findById(itemId);
+
+            if (item.isEmpty()) {
+                continue;
+            }
+
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderId(order.getOrderId())
                     .itemId(itemId)
-                    .sellerId(item.isPresent() ? item.get().getSellerId() : "삭제된 상품")
-                    .price(item.map(Item::getPrice).orElse(0))
+                    .sellerId(item.get().getSellerId())
+                    .price(item.get().getPrice())
                     .quantity(itemMap.get(itemId))
                     .result(0)
                     .build();
@@ -83,6 +79,7 @@ public class PaymentServiceImpl implements PaymentService {
     private Order createOrder(String userId, PaymentRequestDto paymentRequestDto, Map<Long, Integer> itemMap) {
         // 총 상품 개수
         int totalCount = itemMap.values().stream().mapToInt(Integer::intValue).sum();
+
         // 총 상품 가격
         int totalPrice = itemMap.keySet().stream().mapToInt(itemId -> {
             Optional<Item> item = itemRepository.findById(itemId);

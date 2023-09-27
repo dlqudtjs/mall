@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Data
 @Getter
-public class OrderRequestDto {
+public class OrderUpdateRequestDto {
 
     int result;
 }

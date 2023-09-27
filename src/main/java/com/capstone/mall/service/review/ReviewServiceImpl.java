@@ -30,6 +30,21 @@ public class ReviewServiceImpl implements ReviewService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
+    public ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto) {
+        Review review = Review.builder()
+                .itemId(reviewRequestDto.getItemId())
+                .userId(userId)
+                .content(reviewRequestDto.getContent())
+                .image(reviewRequestDto.getImage())
+                .rate(reviewRequestDto.getRate())
+                .build();
+
+        Review savedReview = reviewRepository.save(review);
+
+        return responseService.createResponseDto(201, "", savedReview.getReviewId());
+    }
+
+    @Override
     public ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sort, String sortType) {
         Sort pageSort = getSort(sort, sortType);
 
@@ -49,7 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ResponseDto readReviewListByUserId(String userId, int pageNum, int pageSize, String token) {
         // 토큰의 userId와 요청의 userId가 일치하지 않을 경우
-        if (!userId.equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(userId)) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -59,12 +74,17 @@ public class ReviewServiceImpl implements ReviewService {
         List<ReviewListByUserId> reviewListByUserId = new ArrayList<>();
         for (Review review : reviews.getContent()) {
             Optional<Item> item = itemRepository.findById(review.getItemId());
+
+            if (item.isEmpty()) {
+                continue;
+            }
+
             reviewListByUserId.add(ReviewListByUserId.builder()
                     .reviewId(review.getReviewId())
                     .userId(review.getUserId())
                     .itemId(review.getItemId())
-                    .itemName(item.isEmpty() ? "삭제된 상품" : item.get().getName())
-                    .itemImage(item.isEmpty() ? "" : item.get().getImage1())
+                    .itemName(item.get().getName())
+                    .itemImage(item.get().getImage1())
                     .content(review.getContent())
                     .reviewImage(review.getImage())
                     .rate(review.getRate())
@@ -84,49 +104,34 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto) {
-        Review review = Review.builder()
-                .itemId(reviewRequestDto.getItemId())
-                .userId(userId)
-                .content(reviewRequestDto.getContent())
-                .image(reviewRequestDto.getImage())
-                .rate(reviewRequestDto.getRate())
-                .build();
-
-        Review savedReview = reviewRepository.save(review);
-
-        return responseService.createResponseDto(201, "", savedReview.getReviewId());
-    }
-
-    @Override
     public ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, String token) {
-        Review review = reviewRepository.findById(reviewId).orElse(null);
+        Optional<Review> review = reviewRepository.findById(reviewId);
 
-        if (review == null) {
+        if (review.isEmpty()) {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!review.getUserId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(review.get().getUserId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        review.setUserId(reviewRequestDto.getUserId());
-        review.setContent(reviewRequestDto.getContent());
-        review.setImage(reviewRequestDto.getImage());
-        review.setRate(reviewRequestDto.getRate());
+        review.get().setUserId(reviewRequestDto.getUserId());
+        review.get().setContent(reviewRequestDto.getContent());
+        review.get().setImage(reviewRequestDto.getImage());
+        review.get().setRate(reviewRequestDto.getRate());
 
-        return responseService.createResponseDto(200, "", review.getReviewId());
+        return responseService.createResponseDto(200, "", reviewId);
     }
 
     @Override
     public ResponseDto deleteReview(Long reviewId, String token) {
-        Review review = reviewRepository.findById(reviewId).orElse(null);
+        Optional<Review> review = reviewRepository.findById(reviewId);
 
-        if (review == null) {
+        if (review.isEmpty()) {
             return responseService.createResponseDto(200, "review does not exist", null);
         }
 
-        if (!review.getUserId().equals(jwtTokenProvider.getUserIdByBearerToken(token))) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(review.get().getUserId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -160,14 +165,5 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return Sort.by(sort).ascending();
-    }
-
-    private List<Review> pagination(List<Review> reviewList, int pageNum, int pageSize) {
-        pageNum = Math.max(pageNum, 1);
-        int endIdx = Math.min(pageNum * pageSize, reviewList.size());
-
-        reviewList = reviewList.subList((pageNum - 1) * pageSize, endIdx);
-
-        return reviewList;
     }
 }

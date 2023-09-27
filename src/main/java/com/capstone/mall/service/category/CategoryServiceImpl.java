@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,23 +27,23 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public ResponseDto readCategoryList() {
-        Category rootCategory = categoryRepository.findByCategoryId(0L).orElse(null);
+        Optional<Category> rootCategory = categoryRepository.findByCategoryId(0L);
 
-        if (rootCategory == null) {
-            return responseService.createResponseDto(200, "Category does not exist", null);
+        if (rootCategory.isEmpty()) {
+            return responseService.createResponseDto(200, "", null);
         }
 
         List<CategoryResponseDto> categoryResponseDtoList = new ArrayList<>();
         categoryResponseDtoList.add(
                 CategoryResponseDto.builder()
-                        .categoryId(rootCategory.getCategoryId())
-                        .name(rootCategory.getName())
-                        .status(rootCategory.getStatus())
+                        .categoryId(rootCategory.get().getCategoryId())
+                        .name(rootCategory.get().getName())
+                        .status(rootCategory.get().getStatus())
                         // 현재 카테고리(ROOT)의 자식 카테고리를 가져옴
-                        .child(getChildCategoryList(rootCategory.getCategoryId()))
+                        .child(getChildCategoryList(rootCategory.get().getCategoryId()))
                         .build());
 
-        return responseService.createResponseDto(200, "", categoryResponseDtoList);
+        return responseService.createResponseDto(201, "", categoryResponseDtoList);
     }
 
     @Override
@@ -60,18 +61,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto) {
-        Category updateCategory = categoryRepository.findByCategoryId(categoryId).orElse(null);
+        Optional<Category> updateCategory = categoryRepository.findByCategoryId(categoryId);
 
-        // 카테고리가 존재하지 않을 경우
-        if (updateCategory == null) {
-            return responseService.createResponseDto(404, "Category does not exist", null);
+        if (updateCategory.isEmpty()) {
+            return responseService.createResponseDto(200, "category does not exist", null);
         }
 
-        // 카테고리가 존재할 경우
-        updateCategory.setName(categoryRequestDto.getName());
-        updateCategory.setStatus(categoryRequestDto.getStatus());
+        updateCategory.get().setName(categoryRequestDto.getName());
+        updateCategory.get().setStatus(categoryRequestDto.getStatus());
 
-        return responseService.createResponseDto(200, "", updateCategory.getCategoryId());
+        return responseService.createResponseDto(200, "", categoryId);
     }
 
     @Override

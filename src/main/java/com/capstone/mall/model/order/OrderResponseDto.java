@@ -1,5 +1,6 @@
 package com.capstone.mall.model.order;
 
+import com.capstone.mall.model.order.orderDetail.OrderDetailResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
