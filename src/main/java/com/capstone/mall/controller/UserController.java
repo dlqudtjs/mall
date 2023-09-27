@@ -39,4 +39,10 @@ public class UserController {
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
+    @GetMapping("/admin/users")
+    public ResponseEntity<ResponseDto> readAllUserList() {
+        ResponseDto responseDto = userService.readAllUserList();
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
+    }
 }

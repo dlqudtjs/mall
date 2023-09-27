@@ -21,16 +21,16 @@ public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
     // 카테고리 별 아이템 리스트 조회
     @Query(value = itemListView + "where categoryId = :categoryId", nativeQuery = true)
-    List<ItemProjectionInterface> itemListByCategoryId(Long categoryId);
+    List<ItemProjectionInterface> getItemListByCategoryId(Long categoryId);
 
 
     // 검색 키워드 별 아이템 리스트 조회
     @Query(value = itemListView + "where itemId in" + searchKeyword, nativeQuery = true)
-    List<ItemProjectionInterface> itemListByKeyword(String keyword);
+    List<ItemProjectionInterface> getItemListByKeyword(String keyword);
 
     @Query(value = itemListView + "where ItemId = :itemId", nativeQuery = true)
-    ItemProjectionInterface itemDetailByItemId(Long itemId);
+    ItemProjectionInterface getItemDetailByItemId(Long itemId);
 
     @Query(value = itemListView + "where sellerId = :sellerId", nativeQuery = true)
-    List<ItemProjectionInterface> callGetItemsBySellerId(String sellerId);
+    List<ItemProjectionInterface> getItemsListBySellerId(String sellerId);
 }

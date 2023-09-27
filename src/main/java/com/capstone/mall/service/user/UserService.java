@@ -11,4 +11,6 @@ public interface UserService {
     ResponseDto refresh(String refreshToken, HttpServletRequest request);
 
     ResponseDto update(String userId, UserRequestDto userRequestDto);
+
+    ResponseDto readAllUserList();
 }

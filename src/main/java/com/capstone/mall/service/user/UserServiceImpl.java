@@ -5,6 +5,7 @@ import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.token.TokenResponse;
 import com.capstone.mall.model.user.User;
 import com.capstone.mall.model.user.UserRequestDto;
+import com.capstone.mall.model.user.UserResponseDto;
 import com.capstone.mall.repository.JpaUserRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
@@ -18,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -104,6 +107,22 @@ public class UserServiceImpl implements UserService {
         user.setRole(userRequestDto.getRole());
 
         return responseService.createResponseDto(200, "", user.getUserId());
+    }
+
+    @Override
+    public ResponseDto readAllUserList() {
+        List<User> userList = userRepository.findAll();
+        List<UserResponseDto> users = new ArrayList<>();
+
+        for (User user : userList) {
+            users.add(UserResponseDto.builder()
+                    .userId(user.getUserId())
+                    .metaId(user.getMetaId())
+                    .role(user.getRole())
+                    .build());
+        }
+
+        return responseService.createResponseDto(200, "", users);
     }
 
     private boolean checkRole(String role) {

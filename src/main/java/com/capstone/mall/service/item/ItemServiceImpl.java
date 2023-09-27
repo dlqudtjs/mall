@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(200, "", null);
         }
 
-        ItemProjectionInterface item = itemRepository.itemDetailByItemId(itemId);
+        ItemProjectionInterface item = itemRepository.getItemDetailByItemId(itemId);
 
         ItemResponseDto itemResponseDto = ItemResponseDto.builder()
                 .itemId(item.getItemId())
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 검색으로 아이템 리스트 조회
     public ResponseDto readItemList(String search, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemProjectionInterface> items = itemRepository.itemListByKeyword(search);
+        List<ItemProjectionInterface> items = itemRepository.getItemListByKeyword(search);
 
         // Interface 매핑
         List<ItemProjection> itemList = getItems(items);
@@ -84,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 카테고리로 아이템 리스트 조회
     public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemProjectionInterface> items = itemRepository.itemListByCategoryId(categoryId);
+        List<ItemProjectionInterface> items = itemRepository.getItemListByCategoryId(categoryId);
 
         // Interface 매핑
         List<ItemProjection> itemList = getItems(items);
@@ -112,7 +112,7 @@ public class ItemServiceImpl implements ItemService {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        List<ItemProjectionInterface> items = itemRepository.callGetItemsBySellerId(sellerId);
+        List<ItemProjectionInterface> items = itemRepository.getItemsListBySellerId(sellerId);
 
         List<ItemProjection> itemList = getItems(items);
 
