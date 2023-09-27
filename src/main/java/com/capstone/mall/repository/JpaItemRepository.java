@@ -2,10 +2,10 @@ package com.capstone.mall.repository;
 
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.model.item.ItemProjectionInterface;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.util.List;
 
 public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
@@ -21,16 +21,16 @@ public interface JpaItemRepository extends JpaRepository<Item, Long> {
 
     // 카테고리 별 아이템 리스트 조회
     @Query(value = itemListView + "where categoryId = :categoryId", nativeQuery = true)
-    List<ItemProjectionInterface> getItemListByCategoryId(Long categoryId);
-
+    Page<ItemProjectionInterface> getItemListByCategoryId(Long categoryId, Pageable pageable);
 
     // 검색 키워드 별 아이템 리스트 조회
     @Query(value = itemListView + "where itemId in" + searchKeyword, nativeQuery = true)
-    List<ItemProjectionInterface> getItemListByKeyword(String keyword);
+    Page<ItemProjectionInterface> getItemListByKeyword(String keyword, Pageable pageable);
+
+    @Query(value = itemListView + "where sellerId = :sellerId", nativeQuery = true)
+    Page<ItemProjectionInterface> getItemsListBySellerId(String sellerId, Pageable pageable);
 
     @Query(value = itemListView + "where ItemId = :itemId", nativeQuery = true)
     ItemProjectionInterface getItemDetailByItemId(Long itemId);
 
-    @Query(value = itemListView + "where sellerId = :sellerId", nativeQuery = true)
-    List<ItemProjectionInterface> getItemsListBySellerId(String sellerId);
 }

@@ -11,12 +11,16 @@ import com.capstone.mall.repository.JpaKeywordRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,23 +62,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 검색으로 아이템 리스트 조회
     public ResponseDto readItemList(String search, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemProjectionInterface> items = itemRepository.getItemListByKeyword(search);
+        Sort pageSort = getSort(sort, sortType);
+        Pageable pageable = getPageable(pageNum, pageSize, pageSort);
+
+        Page<ItemProjectionInterface> items = itemRepository.getItemListByKeyword(search, pageable);
 
         // Interface 매핑
         List<ItemProjection> itemList = getItems(items);
 
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
-
-        // 정렬
-        itemList = listSort(itemList, sort, sortType);
-
-        // 페이지네이션
-        itemList = pagination(itemList, pageNum, pageSize);
-
         ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
-                .totalPage(totalPage)
+                .totalPage(items.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", itemResponseDto);
@@ -84,47 +82,39 @@ public class ItemServiceImpl implements ItemService {
     @Override
     // 카테고리로 아이템 리스트 조회
     public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
-        List<ItemProjectionInterface> items = itemRepository.getItemListByCategoryId(categoryId);
+        Sort pageSort = getSort(sort, sortType);
+        Pageable pageable = getPageable(pageNum, pageSize, pageSort);
+
+        Page<ItemProjectionInterface> items = itemRepository.getItemListByCategoryId(categoryId, pageable);
 
         // Interface 매핑
         List<ItemProjection> itemList = getItems(items);
 
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
-
-        // 정렬
-        itemList = listSort(itemList, sort, sortType);
-
-        // 페이지네이션
-        itemList = pagination(itemList, pageNum, pageSize);
-
         ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
-                .totalPage(totalPage)
+                .totalPage(items.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", itemResponseDto);
     }
 
+    // 판매자가 등록한 아이템 리스트 조회
     @Override
     public ResponseDto readItemListBySellerId(String sellerId, int pageNum, int pageSize, String token) {
         if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(sellerId)) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        List<ItemProjectionInterface> items = itemRepository.getItemsListBySellerId(sellerId);
+        Pageable pageable = getPageable(pageNum, pageSize);
 
+        Page<ItemProjectionInterface> items = itemRepository.getItemsListBySellerId(sellerId, pageable);
+
+        // Interface 매핑
         List<ItemProjection> itemList = getItems(items);
-
-        // 총 페이지 수
-        int totalPage = (int) Math.ceil((double) itemList.size() / pageSize);
-
-        // 페이지네이션
-        itemList = pagination(itemList, pageNum, pageSize);
 
         ItemProjectionListResponseDto itemResponseDto = ItemProjectionListResponseDto.builder()
                 .items(itemList)
-                .totalPage(totalPage)
+                .totalPage(items.getTotalPages())
                 .build();
 
         return responseService.createResponseDto(200, "", itemResponseDto);
@@ -153,38 +143,38 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto, String token) {
-        Item item = itemRepository.findById(itemId).orElse(null);
+        Optional<Item> item = itemRepository.findById(itemId);
 
-        if (item == null) {
+        if (item.isEmpty()) {
             return responseService.createResponseDto(200, "item does not exist", null);
         }
 
-        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.getSellerId())) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.get().getSellerId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
-        item.setSellerId(itemRequestDto.getSellerId());
-        item.setName(itemRequestDto.getName());
-        item.setCategoryId(itemRequestDto.getCategoryId());
-        item.setPrice(itemRequestDto.getPrice());
-        item.setStock(itemRequestDto.getStock());
-        item.setContent(itemRequestDto.getContent());
-        item.setImage1(itemRequestDto.getImage1());
-        item.setImage2(itemRequestDto.getImage2());
-        item.setImage3(itemRequestDto.getImage3());
+        item.get().setSellerId(itemRequestDto.getSellerId());
+        item.get().setName(itemRequestDto.getName());
+        item.get().setCategoryId(itemRequestDto.getCategoryId());
+        item.get().setPrice(itemRequestDto.getPrice());
+        item.get().setStock(itemRequestDto.getStock());
+        item.get().setContent(itemRequestDto.getContent());
+        item.get().setImage1(itemRequestDto.getImage1());
+        item.get().setImage2(itemRequestDto.getImage2());
+        item.get().setImage3(itemRequestDto.getImage3());
 
-        return responseService.createResponseDto(200, "", item.getItemId());
+        return responseService.createResponseDto(200, "", itemId);
     }
 
     @Override
     public ResponseDto deleteItem(Long itemId, String token) {
-        Item item = itemRepository.findById(itemId).orElse(null);
+        Optional<Item> item = itemRepository.findById(itemId);
 
-        if (item == null) {
+        if (item.isEmpty()) {
             return responseService.createResponseDto(200, "item does not exist", null);
         }
 
-        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.getSellerId())) {
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(item.get().getSellerId())) {
             return responseService.createResponseDto(403, "token does not match", null);
         }
 
@@ -193,52 +183,9 @@ public class ItemServiceImpl implements ItemService {
         return responseService.createResponseDto(200, "", itemId);
     }
 
-    private List<ItemProjection> listSort(List<ItemProjection> itemList, String sort, String sortType) {
-        switch (sort) {
-            case "createdAt" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
-                } else {
-                    itemList.sort(Comparator.comparing(ItemProjection::getCreatedAt));
-                }
-            }
-            case "avgRating" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> (int) (o2.getAvgRating() - o1.getAvgRating()));
-                } else {
-                    itemList.sort((o1, o2) -> (int) (o1.getAvgRating() - o2.getAvgRating()));
-                }
-            }
-            case "price" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> o2.getPrice() - o1.getPrice());
-                } else {
-                    itemList.sort(Comparator.comparingInt(ItemProjection::getPrice));
-                }
-            }
-            case "sales" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> o2.getSales() - o1.getSales());
-                } else {
-                    itemList.sort(Comparator.comparingInt(ItemProjection::getSales));
-                }
-            }
-            case "stock" -> {
-                if (sortType.equals("desc")) {
-                    itemList.sort((o1, o2) -> o2.getReviewCount() - o1.getReviewCount());
-                } else {
-                    itemList.sort(Comparator.comparingInt(ItemProjection::getReviewCount));
-                }
-            }
-        }
-
-        return itemList;
-    }
-
-    private List<ItemProjection> getItems(List<ItemProjectionInterface> items) {
+    private List<ItemProjection> getItems(Page<ItemProjectionInterface> items) {
         List<ItemProjection> itemList = new ArrayList<>();
-
-        for (ItemProjectionInterface item : items) {
+        for (ItemProjectionInterface item : items.getContent()) {
             itemList.add(ItemProjection.builder()
                     .itemId(item.getItemId())
                     .name(item.getName())
@@ -246,6 +193,7 @@ public class ItemServiceImpl implements ItemService {
                     .price(item.getPrice())
                     .content(item.getContent())
                     .createdAt(item.getCreatedAt())
+                    .updatedAt(item.getUpdatedAt())
                     .avgRating(item.getAvgRating())
                     .sales(item.getSales())
                     .reviewCount(item.getReviewCount())
@@ -283,12 +231,32 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private List<ItemProjection> pagination(List<ItemProjection> itemList, int pageNum, int pageSize) {
-        pageNum = Math.max(pageNum, 1);
-        int endIdx = Math.min(pageNum * pageSize, itemList.size());
+    private Pageable getPageable(int pageNum, int pageSize) {
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
 
-        itemList = itemList.subList((pageNum - 1) * pageSize, endIdx);
+        return PageRequest.of(pageNum, pageSize);
+    }
 
-        return itemList;
+    private Pageable getPageable(int pageNum, int pageSize, Sort pageSort) {
+        pageNum = Math.max(pageNum, 0);
+        pageSize = Math.max(pageSize, 1);
+
+        return PageRequest.of(pageNum, pageSize, pageSort);
+    }
+
+    private Sort getSort(String sort, String sortType) {
+        // 정렬 기준이 rate, createdAt이 아닐 경우 default 로 createdAt 으로 정렬
+        if (!sort.equals("avgRating") && !sort.equals("createdAt") &&
+                !sort.equals("price") && !sort.equals("sales") &&
+                !sort.equals("stock")) {
+            sort = "createdAt";
+        }
+
+        if (sortType.equals("asc")) {
+            return Sort.by(sort).descending();
+        }
+
+        return Sort.by(sort).ascending();
     }
 }
