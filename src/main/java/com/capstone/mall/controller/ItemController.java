@@ -26,7 +26,7 @@ public class ItemController {
     public ResponseEntity<ResponseDto> readItemListBySearch(@RequestParam(required = true) String search,
                                                             @RequestParam(required = false, defaultValue = "createdAt") String sort,
                                                             @RequestParam(required = false, defaultValue = "desc") String sortType,
-                                                            @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                            @RequestParam(required = false, defaultValue = "0") int pageNum,
                                                             @RequestParam(required = false, defaultValue = "10") int pageSize) {
         ResponseDto responseDto = itemService.readItemList(search, pageNum, pageSize, sort, sortType);
 
@@ -37,7 +37,7 @@ public class ItemController {
     public ResponseEntity<ResponseDto> readItemListByCategory(@PathVariable Long categoryId,
                                                               @RequestParam(required = false, defaultValue = "createdAt") String sort,
                                                               @RequestParam(required = false, defaultValue = "desc") String sortType,
-                                                              @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                              @RequestParam(required = false, defaultValue = "0") int pageNum,
                                                               @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
         ResponseDto responseDto = itemService.readItemList(categoryId, pageNum, pageSize, sort, sortType);
@@ -48,7 +48,7 @@ public class ItemController {
     // 판매중인 상품 목록 조회
     @GetMapping("/sellers/items/{sellerId}")
     public ResponseEntity<ResponseDto> readItemListBySellerId(@PathVariable String sellerId,
-                                                              @RequestParam(required = false, defaultValue = "1") int pageNum,
+                                                              @RequestParam(required = false, defaultValue = "0") int pageNum,
                                                               @RequestParam(required = false, defaultValue = "10") int pageSize,
                                                               @RequestHeader("Authorization") String token) {
         ResponseDto responseDto = itemService.readItemListBySellerId(sellerId, pageNum, pageSize, token);

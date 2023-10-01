@@ -1,7 +1,8 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.user.UserRequestDto;
+import com.capstone.mall.model.user.UserLoginRequestDto;
+import com.capstone.mall.model.user.UserUpdateRequestDto;
 import com.capstone.mall.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/public/login/{metaId}")
-    public ResponseEntity<ResponseDto> login(@PathVariable String metaId, @RequestBody UserRequestDto userRequestDto) throws Exception {
-        ResponseDto responseDto = userService.login(metaId, userRequestDto);
+    public ResponseEntity<ResponseDto> login(@PathVariable String metaId, @RequestBody UserLoginRequestDto loginRequestDto) throws Exception {
+        ResponseDto responseDto = userService.login(metaId, loginRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PatchMapping("/admin/users/{userId}")
-    public ResponseEntity<ResponseDto> update(@PathVariable String userId, @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<ResponseDto> update(@PathVariable String userId, @RequestBody UserUpdateRequestDto userRequestDto) {
         ResponseDto responseDto = userService.update(userId, userRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);

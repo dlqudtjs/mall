@@ -2,7 +2,7 @@ package com.capstone.mall.service.cart;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.cart.Cart;
-import com.capstone.mall.model.cart.CartRequestDto;
+import com.capstone.mall.model.cart.CartAddRequestDto;
 import com.capstone.mall.model.cart.CartResponseDto;
 import com.capstone.mall.model.cart.CartUpdateRequestDto;
 import com.capstone.mall.model.item.Item;
@@ -29,7 +29,7 @@ public class CartServiceImpl implements CartService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public ResponseDto addCart(String userId, CartRequestDto cartRequestDto) {
+    public ResponseDto addCart(String userId, CartAddRequestDto cartRequestDto) {
         Cart cart = Cart.builder()
                 .userId(userId)
                 .itemId(cartRequestDto.getItemId())

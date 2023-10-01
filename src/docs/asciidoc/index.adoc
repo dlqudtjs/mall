@@ -8,3 +8,7 @@ endif::[]
 :sectlinks:
 
 == link:cart/cart.html[장바구니 API]
+
+== link:user/user.html[회원 관련 API]
+
+== link:review/review.html[리뷰 관련 API]

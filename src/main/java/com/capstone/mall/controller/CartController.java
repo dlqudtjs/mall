@@ -1,7 +1,7 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.cart.CartRequestDto;
+import com.capstone.mall.model.cart.CartAddRequestDto;
 import com.capstone.mall.model.cart.CartUpdateRequestDto;
 import com.capstone.mall.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping("/users/carts/{userId}")
-    public ResponseEntity<ResponseDto> addCart(@PathVariable String userId, @RequestBody CartRequestDto cartRequestDto) {
+    public ResponseEntity<ResponseDto> addCart(@PathVariable String userId, @RequestBody CartAddRequestDto cartRequestDto) {
         ResponseDto responseDto = cartService.addCart(userId, cartRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);

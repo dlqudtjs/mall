@@ -4,8 +4,9 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.token.TokenResponse;
 import com.capstone.mall.model.user.User;
-import com.capstone.mall.model.user.UserRequestDto;
+import com.capstone.mall.model.user.UserLoginRequestDto;
 import com.capstone.mall.model.user.UserResponseDto;
+import com.capstone.mall.model.user.UserUpdateRequestDto;
 import com.capstone.mall.repository.JpaUserRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseService;
@@ -38,8 +39,8 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider tokenProvider;
 
     @Override
-    public ResponseDto login(String metaId, UserRequestDto userRequestDto) throws Exception {
-        if (!validateMetaId(metaId, userRequestDto.getCheckId())) {
+    public ResponseDto login(String metaId, UserLoginRequestDto loginRequestDto) throws Exception {
+        if (!validateMetaId(metaId, loginRequestDto.getCheckId())) {
             return responseService.createResponseDto(401, "Invalid User Id", null);
         }
 
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseDto update(String userId, UserRequestDto userRequestDto) {
+    public ResponseDto update(String userId, UserUpdateRequestDto userRequestDto) {
         Optional<User> user = userRepository.findByUserId(userId);
 
         if (user.isEmpty()) {

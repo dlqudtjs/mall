@@ -1,13 +1,11 @@
 package com.capstone.mall.model.user;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Getter
-public class UserRequestDto {
+@Setter
+public class UserLoginRequestDto {
 
     private String checkId;
-
-    private String role;
 }

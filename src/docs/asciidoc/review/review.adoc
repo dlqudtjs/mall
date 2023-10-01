@@ -1,0 +1,80 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Cart API Docs
+:toc: left
+:toclevels: 4
+
+== 리뷰 작성
+
+=== /api/users/reviews/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/review-api-docs-test/create-review/http-request.adoc[]
+include::{snippets}/review-api-docs-test/create-review/request-fields.adoc[]
+include::{snippets}/review-api-docs-test/create-review/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/review-api-docs-test/create-review/http-response.adoc[]
+include::{snippets}/review-api-docs-test/create-review/response-fields.adoc[]
+
+== 리뷰 조회
+
+=== /api/public/reviews/{itemId}
+
+==== HTTP Request:
+
+include::{snippets}/review-api-docs-test/read-review-by-item-id/http-request.adoc[]
+include::{snippets}/review-api-docs-test/read-review-by-item-id/query-parameters.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/review-api-docs-test/read-review-by-item-id/http-response.adoc[]
+include::{snippets}/review-api-docs-test/read-review-by-item-id/response-fields.adoc[]
+
+== 작성한 리뷰 조회
+
+=== /api/users/reviews/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/review-api-docs-test/read-review-by-user-id/http-request.adoc[]
+include::{snippets}/review-api-docs-test/read-review-by-user-id/query-parameters.adoc[]
+include::{snippets}/review-api-docs-test/read-review-by-user-id/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/review-api-docs-test/read-review-by-user-id/http-response.adoc[]
+include::{snippets}/review-api-docs-test/read-review-by-user-id/response-fields.adoc[]
+
+== 리뷰 수정
+
+=== /api/users/reviews/{reviewId}
+
+==== HTTP Request:
+
+include::{snippets}/review-api-docs-test/update-review/http-request.adoc[]
+include::{snippets}/review-api-docs-test/update-review/request-fields.adoc[]
+include::{snippets}/review-api-docs-test/update-review/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/review-api-docs-test/update-review/http-response.adoc[]
+include::{snippets}/review-api-docs-test/update-review/response-fields.adoc[]
+
+== 리뷰 삭제
+
+=== /api/users/reviews/{reviewId}
+
+==== HTTP Request:
+
+include::{snippets}/review-api-docs-test/delete-review/http-request.adoc[]
+include::{snippets}/review-api-docs-test/delete-review/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/review-api-docs-test/delete-review/http-response.adoc[]
+include::{snippets}/review-api-docs-test/delete-review/response-fields.adoc[]

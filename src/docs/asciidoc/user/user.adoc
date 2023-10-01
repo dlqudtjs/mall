@@ -1,0 +1,64 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Cart API Docs
+:toc: left
+:toclevels: 4
+
+== 로그인
+
+=== /api/public/login/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/user-api-docs-test/login/http-request.adoc[]
+include::{snippets}/user-api-docs-test/login/request-fields.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/user-api-docs-test/login/http-response.adoc[]
+include::{snippets}/user-api-docs-test/login/response-fields.adoc[]
+
+== 토큰 재발급
+
+=== /api/users/refresh
+
+==== HTTP Request:
+
+include::{snippets}/user-api-docs-test/refresh/http-request.adoc[]
+include::{snippets}/user-api-docs-test/refresh/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/user-api-docs-test/refresh/http-response.adoc[]
+include::{snippets}/user-api-docs-test/refresh/response-fields.adoc[]
+
+== 회원 권한 수정
+
+=== /api/admin/users/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/user-api-docs-test/update/http-request.adoc[]
+include::{snippets}/user-api-docs-test/update/request-fields.adoc[]
+include::{snippets}/user-api-docs-test/update/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/user-api-docs-test/update/http-response.adoc[]
+include::{snippets}/user-api-docs-test/update/response-fields.adoc[]
+
+== 회원 조회
+
+=== /api/admin/users
+
+==== HTTP Request:
+
+include::{snippets}/user-api-docs-test/read-all-user-list/http-request.adoc[]
+include::{snippets}/user-api-docs-test/read-all-user-list/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/user-api-docs-test/read-all-user-list/http-response.adoc[]
+include::{snippets}/user-api-docs-test/read-all-user-list/response-fields.adoc[]

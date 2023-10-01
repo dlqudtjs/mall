@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class CartRequestDto {
+public class CartAddRequestDto {
     private Long itemId;
     private int quantity;
 }

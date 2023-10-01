@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public ResponseDto createReview(String userId, ReviewRequestDto reviewRequestDto) {
+    public ResponseDto createReview(String userId, ReviewCreateRequestDto reviewRequestDto) {
         Review review = Review.builder()
                 .itemId(reviewRequestDto.getItemId())
                 .userId(userId)
@@ -45,7 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseDto readReviewList(Long itemId, int pageNum, int pageSize, String sort, String sortType) {
+    public ResponseDto readReviewListByItemId(Long itemId, int pageNum, int pageSize, String sort, String sortType) {
         Sort pageSort = getSort(sort, sortType);
 
         Pageable pageable = getPageable(pageNum, pageSize, pageSort);
@@ -104,7 +104,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public ResponseDto updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, String token) {
+    public ResponseDto updateReview(Long reviewId, ReviewUpdateRequestDto reviewRequestDto, String token) {
         Optional<Review> review = reviewRepository.findById(reviewId);
 
         if (review.isEmpty()) {
