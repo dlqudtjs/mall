@@ -1,15 +1,15 @@
 package com.capstone.mall.service.category;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.category.CategoryRequestDto;
+import com.capstone.mall.model.category.CategoryCreateRequestDto;
 
 public interface CategoryService {
 
     ResponseDto readCategoryList();
 
-    ResponseDto createCategory(CategoryRequestDto categoryRequestDto);
+    ResponseDto createCategory(CategoryCreateRequestDto categoryRequestDto);
 
-    ResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto);
+    ResponseDto updateCategory(Long categoryId, CategoryCreateRequestDto categoryRequestDto);
 
     ResponseDto deleteCategory(Long categoryId);
 }

@@ -1,7 +1,7 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.category.CategoryRequestDto;
+import com.capstone.mall.model.category.CategoryCreateRequestDto;
 import com.capstone.mall.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +23,12 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/categories")
-    public ResponseDto createCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+    public ResponseDto createCategory(@RequestBody CategoryCreateRequestDto categoryRequestDto) {
         return categoryService.createCategory(categoryRequestDto);
     }
 
     @PatchMapping("/admin/categories/{categoryId}")
-    public ResponseDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequestDto categoryRequestDto) {
+    public ResponseDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryCreateRequestDto categoryRequestDto) {
         return categoryService.updateCategory(categoryId, categoryRequestDto);
     }
 

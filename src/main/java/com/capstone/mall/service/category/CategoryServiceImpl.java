@@ -3,7 +3,7 @@ package com.capstone.mall.service.category;
 import com.capstone.mall.configuration.NoLogging;
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.category.Category;
-import com.capstone.mall.model.category.CategoryRequestDto;
+import com.capstone.mall.model.category.CategoryCreateRequestDto;
 import com.capstone.mall.model.category.CategoryResponseDto;
 import com.capstone.mall.repository.JpaCategoryRepository;
 import com.capstone.mall.service.response.ResponseServiceImpl;
@@ -47,11 +47,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
+    public ResponseDto createCategory(CategoryCreateRequestDto categoryRequestDto) {
         Category createCategory = Category.builder()
+                .parentCategoryId(categoryRequestDto.getParentId())
                 .name(categoryRequestDto.getName())
                 .status(categoryRequestDto.getStatus())
-                .parentCategoryId(categoryRequestDto.getParentId())
                 .build();
 
         Category savedCategory = categoryRepository.save(createCategory);
@@ -60,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto) {
+    public ResponseDto updateCategory(Long categoryId, CategoryCreateRequestDto categoryRequestDto) {
         Optional<Category> updateCategory = categoryRepository.findByCategoryId(categoryId);
 
         if (updateCategory.isEmpty()) {
