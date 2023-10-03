@@ -45,7 +45,7 @@ public class ReviewApiDocsTest extends RestDocumentSupport {
         // given
         given(reviewService.createReview(any(), any())).willReturn(
                 ResponseDto.builder()
-                        .code(HttpStatus.OK.value())
+                        .code(HttpStatus.CREATED.value())
                         .message("")
                         .data(1L)
                         .build());
@@ -55,7 +55,7 @@ public class ReviewApiDocsTest extends RestDocumentSupport {
                         .header("Authorization", "Bearer " + "token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewCreateRequestDto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),

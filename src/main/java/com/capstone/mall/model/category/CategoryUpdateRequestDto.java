@@ -7,12 +7,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class CategoryCreateRequestDto {
-
-    private Long categoryId;
-
-    private Long parentId;
-
+public class CategoryUpdateRequestDto {
     private String name;
 
     private String status;

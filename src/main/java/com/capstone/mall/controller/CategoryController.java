@@ -2,6 +2,7 @@ package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.category.CategoryCreateRequestDto;
+import com.capstone.mall.model.category.CategoryUpdateRequestDto;
 import com.capstone.mall.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +24,23 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/categories")
-    public ResponseDto createCategory(@RequestBody CategoryCreateRequestDto categoryRequestDto) {
-        return categoryService.createCategory(categoryRequestDto);
+    public ResponseEntity<ResponseDto> createCategory(@RequestBody CategoryCreateRequestDto categoryRequestDto) {
+        ResponseDto responseDto = categoryService.createCategory(categoryRequestDto);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
     @PatchMapping("/admin/categories/{categoryId}")
-    public ResponseDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryCreateRequestDto categoryRequestDto) {
-        return categoryService.updateCategory(categoryId, categoryRequestDto);
+    public ResponseEntity<ResponseDto> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryUpdateRequestDto categoryRequestDto) {
+        ResponseDto responseDto = categoryService.updateCategory(categoryId, categoryRequestDto);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseDto deleteCategory(@PathVariable Long categoryId) {
-        return categoryService.deleteCategory(categoryId);
+    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable Long categoryId) {
+        ResponseDto responseDto = categoryService.deleteCategory(categoryId);
+
+        return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
 }

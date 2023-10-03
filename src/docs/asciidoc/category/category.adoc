@@ -1,0 +1,64 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Category API Docs
+:toc: left
+:toclevels: 4
+
+== 카테고리 목록 조회
+
+=== /api/public/categories
+
+==== HTTP Request:
+
+include::{snippets}/category-api-docs-test/read-category/http-request.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/category-api-docs-test/read-category/http-response.adoc[]
+include::{snippets}/category-api-docs-test/read-category/response-fields.adoc[]
+
+== 카테고리 생성
+
+=== /api/admin/categories
+
+==== HTTP Request:
+
+include::{snippets}/category-api-docs-test/create-category/http-request.adoc[]
+include::{snippets}/category-api-docs-test/create-category/request-fields.adoc[]
+include::{snippets}/category-api-docs-test/create-category/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/category-api-docs-test/create-category/http-response.adoc[]
+include::{snippets}/category-api-docs-test/create-category/response-fields.adoc[]
+
+== 카테고리 수정
+
+=== /api/admin/categories/{categoryId}
+
+==== HTTP Request:
+
+include::{snippets}/category-api-docs-test/update-category/http-request.adoc[]
+include::{snippets}/category-api-docs-test/update-category/request-fields.adoc[]
+include::{snippets}/category-api-docs-test/update-category/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/category-api-docs-test/update-category/http-response.adoc[]
+include::{snippets}/category-api-docs-test/update-category/response-fields.adoc[]
+
+== 카테고리 삭제
+
+=== /api/admin/categories/{categoryId}
+
+==== HTTP Request:
+
+include::{snippets}/category-api-docs-test/delete-category/http-request.adoc[]
+include::{snippets}/category-api-docs-test/delete-category/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/category-api-docs-test/delete-category/http-response.adoc[]
+include::{snippets}/category-api-docs-test/delete-category/response-fields.adoc[]

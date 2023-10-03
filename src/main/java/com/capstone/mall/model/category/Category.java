@@ -21,7 +21,7 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "parent_category_id", nullable = true)
+    @Column(name = "parent_category_id")
     private Long parentCategoryId;
 
     @Column(nullable = false)

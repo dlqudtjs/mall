@@ -2,6 +2,7 @@ package com.capstone.mall.service.category;
 
 import com.capstone.mall.model.ResponseDto;
 import com.capstone.mall.model.category.CategoryCreateRequestDto;
+import com.capstone.mall.model.category.CategoryUpdateRequestDto;
 
 public interface CategoryService {
 
@@ -9,7 +10,7 @@ public interface CategoryService {
 
     ResponseDto createCategory(CategoryCreateRequestDto categoryRequestDto);
 
-    ResponseDto updateCategory(Long categoryId, CategoryCreateRequestDto categoryRequestDto);
+    ResponseDto updateCategory(Long categoryId, CategoryUpdateRequestDto categoryRequestDto);
 
     ResponseDto deleteCategory(Long categoryId);
 }

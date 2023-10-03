@@ -581,12 +581,12 @@ Host: localhost:8080
 <h4 id="_http_response">HTTP Response:</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json
 Content-Length: 54
 
 {
-  "code" : 200,
+  "code" : 201,
   "message" : "",
   "data" : 1
 }</code></pre>
@@ -655,19 +655,19 @@ Host: localhost:8080</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>sort</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">정렬 기준</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">정렬 기준 (default: createdAt)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>sortType</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">정렬 타입</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">정렬 타입 (default: desc)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>pageNum</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 번호</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 번호 (default: 0)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>pageSize</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 사이즈</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 사이즈 (default: 10)</p></td>
 </tr>
 </tbody>
 </table>
@@ -690,8 +690,8 @@ Content-Length: 648
       "itemId" : 1,
       "content" : "testContent",
       "image" : "testImage",
-      "createdAt" : "2023-10-01T09:49:00.150+00:00",
-      "updatedAt" : "2023-10-01T09:49:00.150+00:00",
+      "createdAt" : "2023-10-03T08:05:47.520+00:00",
+      "updatedAt" : "2023-10-03T08:05:47.520+00:00",
       "rate" : 5
     }, {
       "reviewId" : 2,
@@ -699,8 +699,8 @@ Content-Length: 648
       "itemId" : 2,
       "content" : "testContent2",
       "image" : "testImage2",
-      "createdAt" : "2023-10-01T09:49:00.150+00:00",
-      "updatedAt" : "2023-10-01T09:49:00.150+00:00",
+      "createdAt" : "2023-10-03T08:05:47.520+00:00",
+      "updatedAt" : "2023-10-03T08:05:47.520+00:00",
       "rate" : 4
     } ],
     "totalPage" : 1
@@ -812,11 +812,11 @@ Host: localhost:8080</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>pageNum</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 번호</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 번호 (default: 0)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>pageSize</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 사이즈</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지 사이즈 (default: 10)</p></td>
 </tr>
 </tbody>
 </table>
@@ -859,8 +859,8 @@ Content-Length: 732
     "content" : "testContent",
     "reviewImage" : "testReviewImage",
     "rate" : 5,
-    "createdAt" : "2023-10-01T09:49:00.214+00:00",
-    "updatedAt" : "2023-10-01T09:49:00.214+00:00"
+    "createdAt" : "2023-10-03T08:05:47.590+00:00",
+    "updatedAt" : "2023-10-03T08:05:47.590+00:00"
   }, {
     "reviewId" : 2,
     "userId" : "testId2",
@@ -870,8 +870,8 @@ Content-Length: 732
     "content" : "testContent2",
     "reviewImage" : "testReviewImage2",
     "rate" : 4,
-    "createdAt" : "2023-10-01T09:49:00.214+00:00",
-    "updatedAt" : "2023-10-01T09:49:00.214+00:00"
+    "createdAt" : "2023-10-03T08:05:47.590+00:00",
+    "updatedAt" : "2023-10-03T08:05:47.590+00:00"
   } ]
 }</code></pre>
 </div>
