@@ -1,11 +1,14 @@
 package com.capstone.mall.model.order;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Getter
+@Setter
 public class OrderUpdateRequestDto {
 
     int result;
+
+    public OrderUpdateRequestDto() {
+    }
 }

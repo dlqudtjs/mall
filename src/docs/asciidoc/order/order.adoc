@@ -1,0 +1,67 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Order API Docs
+:toc: left
+:toclevels: 4
+
+== 주문서 폼 생성
+
+=== /api/users/form/orders/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/order-api-docs-test/create-order-form/http-request.adoc[]
+include::{snippets}/order-api-docs-test/create-order-form/query-parameters.adoc[]
+include::{snippets}/order-api-docs-test/create-order-form/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/order-api-docs-test/create-order-form/http-response.adoc[]
+include::{snippets}/order-api-docs-test/create-order-form/response-fields.adoc[]
+
+== 주문 상태 업데이트 (판매자)
+
+=== /api/sellers/orders/{orderDetailId}
+
+==== HTTP Request:
+
+include::{snippets}/order-api-docs-test/update-order/http-request.adoc[]
+include::{snippets}/order-api-docs-test/update-order/request-fields.adoc[]
+include::{snippets}/order-api-docs-test/update-order/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/order-api-docs-test/update-order/http-response.adoc[]
+include::{snippets}/order-api-docs-test/update-order/response-fields.adoc[]
+
+== 판매한 주문 조회 (판매자)
+
+=== /api/sellers/orders/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/order-api-docs-test/get-sold-order-list/http-request.adoc[]
+include::{snippets}/order-api-docs-test/get-sold-order-list/query-parameters.adoc[]
+include::{snippets}/order-api-docs-test/get-sold-order-list/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/order-api-docs-test/get-sold-order-list/http-response.adoc[]
+include::{snippets}/order-api-docs-test/get-sold-order-list/response-fields.adoc[]
+
+== 구매한 주문 조회
+
+=== /api/users/orders/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/order-api-docs-test/get-purchase-list/http-request.adoc[]
+include::{snippets}/order-api-docs-test/get-purchase-list/query-parameters.adoc[]
+include::{snippets}/order-api-docs-test/get-purchase-list/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/order-api-docs-test/get-purchase-list/http-response.adoc[]
+include::{snippets}/order-api-docs-test/get-purchase-list/response-fields.adoc[]

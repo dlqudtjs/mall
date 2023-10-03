@@ -1,11 +1,9 @@
 package com.capstone.mall.model.order.orderForm;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
 @Builder
 @Setter
 @Getter
