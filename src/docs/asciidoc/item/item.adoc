@@ -1,0 +1,107 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Order API Docs
+:toc: left
+:toclevels: 4
+
+== 상품 상세 조회
+
+=== /api/public/items/{itemId}
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/read-item/http-request.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/read-item/http-response.adoc[]
+include::{snippets}/item-api-docs-test/read-item/response-fields.adoc[]
+
+== 상품 목록 조회 (검색어)
+
+=== /api/public/items
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-search/http-request.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-search/query-parameters.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-search/http-response.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-search/response-fields.adoc[]
+
+== 상품 목록 조회 (카테고리)
+
+=== /api/public/categories/{categoryId}/items
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-category/http-request.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-category/query-parameters.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-category/http-response.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-category/response-fields.adoc[]
+
+== 판매중인 상품 목록 조회 (판매자)
+
+=== /api/sellers/items/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-seller-id/http-request.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-seller-id/query-parameters.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-seller-id/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/read-item-list-by-seller-id/http-response.adoc[]
+include::{snippets}/item-api-docs-test/read-item-list-by-seller-id/response-fields.adoc[]
+
+== 상품 등록
+
+=== /api/sellers/items/{userId}
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/create-item/http-request.adoc[]
+include::{snippets}/item-api-docs-test/create-item/request-fields.adoc[]
+include::{snippets}/item-api-docs-test/create-item/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/create-item/http-response.adoc[]
+include::{snippets}/item-api-docs-test/create-item/response-fields.adoc[]
+
+== 상품 수정
+
+=== /api/sellers/items/{itemId}
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/update-item/http-request.adoc[]
+include::{snippets}/item-api-docs-test/update-item/request-fields.adoc[]
+include::{snippets}/item-api-docs-test/update-item/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/update-item/http-response.adoc[]
+include::{snippets}/item-api-docs-test/update-item/response-fields.adoc[]
+
+== 상품 삭제
+
+=== /api/sellers/items/{itemId}
+
+==== HTTP Request:
+
+include::{snippets}/item-api-docs-test/delete-item/http-request.adoc[]
+include::{snippets}/item-api-docs-test/delete-item/request-headers.adoc[]
+
+==== HTTP Response:
+
+include::{snippets}/item-api-docs-test/delete-item/http-response.adoc[]
+include::{snippets}/item-api-docs-test/delete-item/response-fields.adoc[]

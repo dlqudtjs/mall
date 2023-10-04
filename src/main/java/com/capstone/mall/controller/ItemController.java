@@ -1,7 +1,8 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.item.ItemRequestDto;
+import com.capstone.mall.model.item.ItemCreateRequestDto;
+import com.capstone.mall.model.item.ItemUpdateRequestDto;
 import com.capstone.mall.service.item.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class ItemController {
                                                             @RequestParam(required = false, defaultValue = "desc") String sortType,
                                                             @RequestParam(required = false, defaultValue = "0") int pageNum,
                                                             @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        ResponseDto responseDto = itemService.readItemList(search, pageNum, pageSize, sort, sortType);
+        ResponseDto responseDto = itemService.readItemListBySearch(search, pageNum, pageSize, sort, sortType);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
@@ -40,7 +41,7 @@ public class ItemController {
                                                               @RequestParam(required = false, defaultValue = "0") int pageNum,
                                                               @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
-        ResponseDto responseDto = itemService.readItemList(categoryId, pageNum, pageSize, sort, sortType);
+        ResponseDto responseDto = itemService.readItemListByCategoryId(categoryId, pageNum, pageSize, sort, sortType);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }
@@ -57,7 +58,7 @@ public class ItemController {
     }
 
     @PostMapping("/sellers/items/{sellerId}")
-    public ResponseEntity<ResponseDto> createItem(@PathVariable String sellerId, @RequestBody ItemRequestDto itemRequestDto) {
+    public ResponseEntity<ResponseDto> createItem(@PathVariable String sellerId, @RequestBody ItemCreateRequestDto itemRequestDto) {
         ResponseDto responseDto = itemService.createItem(sellerId, itemRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
@@ -65,7 +66,7 @@ public class ItemController {
 
     @PatchMapping("/sellers/items/{itemId}")
     public ResponseEntity<ResponseDto> updateItem(@PathVariable Long itemId,
-                                                  @RequestBody ItemRequestDto itemRequestDto,
+                                                  @RequestBody ItemUpdateRequestDto itemRequestDto,
                                                   @RequestHeader("Authorization") String token) {
         ResponseDto responseDto = itemService.updateItem(itemId, itemRequestDto, token);
 

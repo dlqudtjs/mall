@@ -1,7 +1,7 @@
 package com.capstone.mall.service.media;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.media.MediaRequestDto;
+import com.capstone.mall.model.media.ImageUploadRequestDto;
 import com.capstone.mall.service.response.ResponseService;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UploadServiceImpl implements UploadService {
+public class MediaServiceImpl implements MediaService {
 
     @Value("${gcp.bucket.name}")
     private String bucketName;
@@ -26,17 +26,17 @@ public class UploadServiceImpl implements UploadService {
     private final Storage storage;
 
     @Override
-    public ResponseDto imageUpload(MediaRequestDto mediaRequestDto) throws IOException {
+    public ResponseDto imageUpload(ImageUploadRequestDto imageUploadRequestDto) throws IOException {
         String uuid = UUID.randomUUID().toString();
-        String extension = mediaRequestDto.getFile().getContentType();
+        String extension = imageUploadRequestDto.getFile().getContentType();
 
-        String objectName = imagePath + mediaRequestDto.getEmail() + uuid;
+        String objectName = imagePath + uuid;
 
         BlobInfo blobInfo = storage.create(
                 BlobInfo.newBuilder(bucketName, objectName)
                         .setContentType(extension)
                         .build(),
-                mediaRequestDto.getFile().getBytes());
+                imageUploadRequestDto.getFile().getBytes());
 
         return responseService.createResponseDto(200, "", blobInfo.getMediaLink());
     }

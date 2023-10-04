@@ -1,0 +1,22 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Media API Docs
+:toc: left
+:toclevels: 4
+
+== 이미지 업로드
+
+=== /api/users/uploads/images
+
+==== Http Request:
+
+include::{snippets}/media-api-docs-test/upload-image/http-request.adoc[]
+include::{snippets}/media-api-docs-test/upload-image/request-fields.adoc[]
+include::{snippets}/media-api-docs-test/upload-image/request-headers.adoc[]
+
+==== Http Response:
+
+include::{snippets}/media-api-docs-test/upload-image/http-response.adoc[]
+include::{snippets}/media-api-docs-test/upload-image/response-fields.adoc[]

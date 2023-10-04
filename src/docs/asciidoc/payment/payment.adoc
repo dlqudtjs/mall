@@ -1,0 +1,22 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Media API Docs
+:toc: left
+:toclevels: 4
+
+== 상품 결제
+
+=== /api/users/payments/{userId}
+
+==== Http Request:
+
+include::{snippets}/payment-api-docs-test/payment/http-request.adoc[]
+include::{snippets}/payment-api-docs-test/payment/request-fields.adoc[]
+include::{snippets}/payment-api-docs-test/payment/request-headers.adoc[]
+
+==== Http Response:
+
+include::{snippets}/payment-api-docs-test/payment/http-response.adoc[]
+include::{snippets}/payment-api-docs-test/payment/response-fields.adoc[]

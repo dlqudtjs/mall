@@ -1,8 +1,8 @@
 package com.capstone.mall.controller;
 
 import com.capstone.mall.model.ResponseDto;
-import com.capstone.mall.model.media.MediaRequestDto;
-import com.capstone.mall.service.media.UploadService;
+import com.capstone.mall.model.media.ImageUploadRequestDto;
+import com.capstone.mall.service.media.MediaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,11 +16,11 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class MediaController {
 
-    private final UploadService uploadService;
+    private final MediaService mediaService;
 
     @PostMapping("/users/uploads/images")
-    public ResponseEntity<ResponseDto> uploadImage(MediaRequestDto mediaRequestDto) throws IOException {
-        ResponseDto responseDto = uploadService.imageUpload(mediaRequestDto);
+    public ResponseEntity<ResponseDto> uploadImage(ImageUploadRequestDto imageUploadRequestDto) throws IOException {
+        ResponseDto responseDto = mediaService.imageUpload(imageUploadRequestDto);
 
         return ResponseEntity.status(responseDto.getCode()).body(responseDto);
     }

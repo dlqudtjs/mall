@@ -7,6 +7,8 @@ endif::[]
 :toclevels: 2
 :sectlinks:
 
+== link:item/item.html[상품 관련 API]
+
 == link:cart/cart.html[장바구니 API]
 
 == link:user/user.html[회원 관련 API]
@@ -16,3 +18,7 @@ endif::[]
 == link:category/category.html[카테고리 관련 API]
 
 == link:order/order.html[주문 관련 API]
+
+== link:media/media.html[미디어 관련 API]
+
+== link:payment/payment.html[결제 관련 API]

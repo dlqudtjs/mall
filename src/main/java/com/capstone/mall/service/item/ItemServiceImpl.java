@@ -61,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     // 검색으로 아이템 리스트 조회
-    public ResponseDto readItemList(String search, int pageNum, int pageSize, String sort, String sortType) {
+    public ResponseDto readItemListBySearch(String search, int pageNum, int pageSize, String sort, String sortType) {
         Sort pageSort = getSort(sort, sortType);
         Pageable pageable = getPageable(pageNum, pageSize, pageSort);
 
@@ -81,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     // 카테고리로 아이템 리스트 조회
-    public ResponseDto readItemList(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
+    public ResponseDto readItemListByCategoryId(Long categoryId, int pageNum, int pageSize, String sort, String sortType) {
         Sort pageSort = getSort(sort, sortType);
         Pageable pageable = getPageable(pageNum, pageSize, pageSort);
 
@@ -121,7 +121,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto createItem(String sellerId, ItemRequestDto itemRequestDto) {
+    public ResponseDto createItem(String sellerId, ItemCreateRequestDto itemRequestDto) {
         Item item = Item.builder()
                 .sellerId(sellerId)
                 .name(itemRequestDto.getName())
@@ -142,7 +142,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto, String token) {
+    public ResponseDto updateItem(Long itemId, ItemUpdateRequestDto itemRequestDto, String token) {
         Optional<Item> item = itemRepository.findById(itemId);
 
         if (item.isEmpty()) {
