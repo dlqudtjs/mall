@@ -161,9 +161,9 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if (sortType.equals("asc")) {
-            return Sort.by(sort).descending();
+            return Sort.by(sort).ascending();
         }
 
-        return Sort.by(sort).ascending();
+        return Sort.by(sort).descending();
     }
 }

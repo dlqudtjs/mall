@@ -254,9 +254,9 @@ public class ItemServiceImpl implements ItemService {
         }
 
         if (sortType.equals("asc")) {
-            return Sort.by(sort).descending();
+            return Sort.by(sort).ascending();
         }
 
-        return Sort.by(sort).ascending();
+        return Sort.by(sort).descending();
     }
 }
