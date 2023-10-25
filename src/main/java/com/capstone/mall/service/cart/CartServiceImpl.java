@@ -30,12 +30,17 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public ResponseDto addCart(String userId, CartAddRequestDto cartRequestDto) {
-        int existQuantity = getExistQuantity(userId, cartRequestDto.getItemId());
+        Cart existCart = getExistCart(userId, cartRequestDto.getItemId());
+
+        if (existCart != null) {
+            existCart.setQuantity(existCart.getQuantity());
+            return responseService.createResponseDto(200, "", existCart.getCartId());
+        }
 
         Cart cart = Cart.builder()
                 .userId(userId)
                 .itemId(cartRequestDto.getItemId())
-                .quantity(cartRequestDto.getQuantity() + existQuantity)
+                .quantity(cartRequestDto.getQuantity())
                 .build();
 
         Cart savedCart = cartRepository.save(cart);
@@ -105,11 +110,10 @@ public class CartServiceImpl implements CartService {
         return responseService.createResponseDto(200, "", cartId);
     }
 
-    private int getExistQuantity(String userId, Long itemId) {
+    private Cart getExistCart(String userId, Long itemId) {
         return cartRepository.findByUserId(userId).stream()
                 .filter(cart -> cart.getItemId().equals(itemId))
                 .findFirst()
-                .map(Cart::getQuantity)
-                .orElse(0);
+                .orElse(null);
     }
 }
