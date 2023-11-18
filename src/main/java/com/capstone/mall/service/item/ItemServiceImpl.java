@@ -5,9 +5,11 @@ import com.capstone.mall.model.item.*;
 import com.capstone.mall.model.itemKeyword.ItemKeyword;
 import com.capstone.mall.model.itemKeyword.ItemKeywordID;
 import com.capstone.mall.model.keyword.Keyword;
+import com.capstone.mall.model.user.User;
 import com.capstone.mall.repository.JpaItemKeywordRepository;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaKeywordRepository;
+import com.capstone.mall.repository.JpaUserRepository;
 import com.capstone.mall.security.JwtTokenProvider;
 import com.capstone.mall.service.response.ResponseServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import java.util.Optional;
 public class ItemServiceImpl implements ItemService {
 
     private final JpaItemRepository itemRepository;
+    private final JpaUserRepository userRepository;
     private final ResponseServiceImpl responseService;
     private final JpaKeywordRepository keywordRepository;
     private final JpaItemKeywordRepository itemKeywordRepository;
@@ -40,10 +43,15 @@ public class ItemServiceImpl implements ItemService {
         }
 
         ItemProjectionInterface item = itemRepository.getItemDetailByItemId(itemId);
+        Optional<User> sellerId = userRepository.findByUserId(item.getSellerId());
+
+        if (sellerId.isEmpty()) {
+            return responseService.createResponseDto(200, "seller does not exist", null);
+        }
 
         ItemResponseDto itemResponseDto = ItemResponseDto.builder()
                 .itemId(item.getItemId())
-                .sellerId(item.getSellerId())
+                .sellerId(sellerId.get().getMetaId())
                 .categoryId(item.getCategoryId())
                 .name(item.getName())
                 .image1(item.getImage1())
