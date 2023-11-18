@@ -1,10 +1,12 @@
 package com.capstone.mall.service.payment;
 
 import com.capstone.mall.model.ResponseDto;
+import com.capstone.mall.model.cart.Cart;
 import com.capstone.mall.model.item.Item;
 import com.capstone.mall.model.order.Order;
 import com.capstone.mall.model.order.orderDetail.OrderDetail;
 import com.capstone.mall.model.payment.PaymentRequestDto;
+import com.capstone.mall.repository.JpaCartRepository;
 import com.capstone.mall.repository.JpaItemRepository;
 import com.capstone.mall.repository.JpaOrderDetailRepository;
 import com.capstone.mall.repository.JpaOrderRepository;
@@ -14,20 +16,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PaymentServiceImpl implements PaymentService {
 
     private final ResponseService responseService;
+    private final JpaCartRepository cartRepository;
     private final JpaOrderRepository orderRepository;
     private final JpaOrderDetailRepository orderDetailRepository;
     private final JpaItemRepository itemRepository;
 
     @Override
-    @Transactional
     public ResponseDto payment(String userId, String items, PaymentRequestDto paymentRequestDto) {
         Map<Long, Integer> itemMap = getItemMap(items);
 
@@ -52,8 +56,12 @@ public class PaymentServiceImpl implements PaymentService {
         // 주문 상세 생성
         createOrderDetail(order, itemMap);
 
+        // 주문완료된 상품 장바구니에서 삭제
+        deleteCart(userId, itemMap);
+
         return responseService.createResponseDto(200, "", order.getOrderId());
     }
+
 
     private void createOrderDetail(Order order, Map<Long, Integer> itemMap) {
         for (Long itemId : itemMap.keySet()) {
@@ -78,7 +86,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Order createOrder(String userId, PaymentRequestDto paymentRequestDto, Map<Long, Integer> itemMap) {
         // 총 상품 개수
-        int totalCount = itemMap.values().stream().mapToInt(Integer::intValue).sum();
+        int totalCount = itemMap.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
 
         // 총 상품 가격
         int totalPrice = itemMap.keySet().stream().mapToInt(itemId -> {
@@ -111,5 +121,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         return itemMap;
+    }
+
+    private void deleteCart(String userId, Map<Long, Integer> itemMap) {
+        List<Cart> cartList = cartRepository.findByUserId(userId);
+
+        for (Cart cart : cartList) {
+            if (itemMap.containsKey(cart.getItemId())) {
+                cartRepository.deleteById(cart.getCartId());
+            }
+        }
     }
 }

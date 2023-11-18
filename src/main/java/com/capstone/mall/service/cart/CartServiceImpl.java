@@ -33,7 +33,7 @@ public class CartServiceImpl implements CartService {
         Cart existCart = getExistCart(userId, cartRequestDto.getItemId());
 
         if (existCart != null) {
-            existCart.setQuantity(existCart.getQuantity());
+            existCart.setQuantity(cartRequestDto.getQuantity());
             return responseService.createResponseDto(200, "", existCart.getCartId());
         }
 
@@ -51,6 +51,10 @@ public class CartServiceImpl implements CartService {
     @Override
     public ResponseDto readCartList(String userId, String token) {
         List<Cart> cartList = cartRepository.findByUserId(userId);
+
+        if (!jwtTokenProvider.getUserIdByBearerToken(token).equals(userId)) {
+            return responseService.createResponseDto(403, "token does not match", null);
+        }
 
         List<CartResponseDto> carts = new ArrayList<>();
         for (Cart cart : cartList) {
