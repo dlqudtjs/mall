@@ -3,4 +3,4 @@
 + 챗봇 기능
 
 API Docs
-https://port-0-mall-deploy-jvvy2blm8p9dcp.sel5.cloudtype.app/docs/index.html
+https://dlqudtjs.github.io/mall-backend/
